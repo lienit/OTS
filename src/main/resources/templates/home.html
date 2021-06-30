@@ -11,13 +11,8 @@
 </head>
 <body>
 <div id="test03">
-    <input type="text" v-model="message">
-    <template v-for="student in students">
-        <p>
-            {{student.name}}
 
-        </p>
-    </template>
+
     <el-menu
             :default-active="activeIndex2"
             class="el-menu-demo"
@@ -46,16 +41,10 @@
 <script>
     var vm = new Vue({
         el : '#test03',
-        data : {
-            message:"excellent student:",
-            students:[
-                {name:"student1",id:"12"},
-                {name:"student2",id:"11"},
-                {name:"student3",id:"13"}
-            ],
-            return: {
-                activeIndex: '1',
-                activeIndex2: '1'
+        data : function () {
+            return  {
+                activeIndex : '1',
+                activeIndex2 : '1'
             }
         },
         methods: {
