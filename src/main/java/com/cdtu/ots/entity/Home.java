@@ -7,4 +7,5 @@ package com.cdtu.ots.entity;
  * @Date 2021/7/1
  **/
 public class Home {
+    private int id;
 }
