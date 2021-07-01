@@ -1,4 +1,4 @@
-package com.cdtu.ots.Controller;
+package com.cdtu.ots.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
