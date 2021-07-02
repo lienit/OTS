@@ -6,46 +6,114 @@
     <script th:src="@{/js/vue.min.js}"></script>
     <link rel="stylesheet" th:href="@{/css/index.css}">
     <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <style>
+        .el-header, .el-footer {
 
+            color: #333;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .el-aside {
+            background-color: #D3DCE6;
+            color: #333;
+            text-align: center;
+            line-height: 200px;
+        }
+
+        .el-main {
+            background-color: #E9EEF3;
+            color: #333;
+            text-align: center;
+            line-height: 160px;
+        }
+
+        body > .el-container {
+            margin-bottom: 40px;
+        }
+
+        .el-container:nth-child(5) .el-aside,
+        .el-container:nth-child(6) .el-aside {
+            line-height: 260px;
+        }
+
+        .el-container:nth-child(7) .el-aside {
+            line-height: 320px;
+        }
+        .el-col {
+            border-radius: 4px;
+        }
+        .bg-purple-dark {
+            background: #99a9bf;
+        }
+        .bg-purple {
+            background: #545c64;
+        }
+        .bg-purple-light {
+            background: #545c64;
+        }
+        .grid-content {
+            border-radius: 4px;
+            min-height: 36px;
+        }
+
+    </style>
 
 </head>
 <body>
 <div id="test03">
+    <el-container>
+        <el-header>
+            <el-menu
+                    :default-active="activeIndex2"
+                    class="el-menu-demo"
+                    mode="horizontal"
+                    @select="handleSelect"
+                    background-color="#545c64"
+                    text-color="#fff"
+                    active-text-color="#ffd04b">
+                <el-row :gutter="10" >
+                    <el-col :xs="16" :sm="16" :md="16" :lg="16" :xl="16"><div class="grid-content bg-purple"></div></el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1"><el-menu-item index="1">你好，请登录</el-menu-item></el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1"> <el-menu-item index="3" >免费注册</el-menu-item></el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1"><el-submenu index="2">
+                        <template slot="title">我的订单</template>
+                        <el-menu-item index="2-1">查询订单</el-menu-item>
+                        <el-menu-item index="2-2">足迹</el-menu-item>
+
+                    </el-submenu></el-col>
 
 
-    <el-menu
-            :default-active="activeIndex2"
-            class="el-menu-demo"
-            mode="horizontal"
-            @select="handleSelect"
-            background-color="#545c64"
-            text-color="#fff"
-            active-text-color="#ffd04b">
-        <el-menu-item index="1">处理中心</el-menu-item>
-        <el-submenu index="2">
-            <template slot="title">我的工作台</template>
-            <el-menu-item index="2-1">选项1</el-menu-item>
-            <el-menu-item index="2-2">选项2</el-menu-item>
-            <el-menu-item index="2-3">选项3</el-menu-item>
-            <el-submenu index="2-4">
-                <template slot="title">选项4</template>
-                <el-menu-item index="2-4-1">选项1</el-menu-item>
-                <el-menu-item index="2-4-2">选项2</el-menu-item>
-                <el-menu-item index="2-4-3">选项3</el-menu-item>
-            </el-submenu>
-        </el-submenu>
-        <el-menu-item index="3" disabled>消息中心</el-menu-item>
-        <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
-    </el-menu>
+
+
+
+
+
+
+                </el-row>
+            </el-menu>
+
+        </el-header>
+        <el-container>
+            <el-aside width="200px">Aside</el-aside>
+            <el-container>
+                <el-main>Main</el-main>
+                <el-footer>Footer</el-footer>
+            </el-container>
+        </el-container>
+    </el-container>
+
+
 </div>
 <script>
     var vm = new Vue({
         el : '#test03',
         data : function () {
-            return  {
-                activeIndex : '1',
-                activeIndex2 : '1'
-            }
+            return {
+                activeIndex: '1',
+                activeIndex2: '1'
+            };
         },
         methods: {
             handleSelect(key, keyPath) {
