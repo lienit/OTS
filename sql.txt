@@ -1,0 +1,233 @@
+drop table if exists Address;
+
+drop table if exists Admin;
+
+drop table if exists Category;
+
+drop index Relationship_7_FK on Footprint;
+
+drop index Relationship_5_FK on Footprint;
+
+drop table if exists Footprint;
+
+drop table if exists Goods;
+
+drop table if exists Indent;
+
+drop table if exists Store;
+
+drop table if exists User;
+
+/*==============================================================*/
+/* Table: Address                                               */
+/*==============================================================*/
+create table Address
+(
+   aId                  int not null comment '地址id',
+   aUserid              int not null comment '用户id',
+   aAddress             varchar(80) not null comment '详细地址',
+   aPostcode            varchar(6) not null comment '邮编',
+   aConsignee           varchar(20) not null comment '收货人',
+   aPhone               varchar(11) not null comment '联系电话',
+   isDefault            bool not null comment '是否为默认地址',
+   primary key (aId)
+);
+
+/*==============================================================*/
+/* Table: Admin                                                 */
+/*==============================================================*/
+create table Admin
+(
+   aID                  int not null comment '管理员id',
+   aName                varchar(20) not null comment '管理员账号',
+   aPsaaWord            varchar(20) not null comment '管理员密码',
+   primary key (aID)
+);
+
+/*==============================================================*/
+/* Table: Category                                              */
+/*==============================================================*/
+create table Category
+(
+   cId                  int not null comment '类别id',
+   cName                varchar(20) not null comment '类别名',
+   cState               varchar(1) not null comment '类别状态',
+   Belong               int not null comment '归属',
+   primary key (cId)
+);
+
+/*==============================================================*/
+/* Table: Footprint                                             */
+/*==============================================================*/
+create table Footprint
+(
+   fId                  int not null comment '类别id',
+   fUserId              int not null comment '类别名',
+   fGoodsId             int not null comment '类别状态',
+   fReDate              date not null comment '归属',
+   primary key (fId)
+);
+
+/*==============================================================*/
+/* Index: Relationship_5_FK                                     */
+/*==============================================================*/
+create index Relationship_5_FK on Footprint
+(
+   
+);
+
+/*==============================================================*/
+/* Index: Relationship_7_FK                                     */
+/*==============================================================*/
+create index Relationship_7_FK on Footprint
+(
+   
+);
+
+/*==============================================================*/
+/* Table: Goods                                                 */
+/*==============================================================*/
+create table Goods
+(
+   gId                  int not null comment '商品id',
+   gCatId               int not null comment '类别id',
+   gStoreId             int not null comment '商家id',
+   gName                varchar(50) not null comment '商品名',
+   gPrice               double not null comment '商品价格',
+   gCategory            varchar(20) not null comment '商品类别',
+   gImage               varchar(200) comment '商品图片',
+   gParameter           varchar(200) not null comment '商品参数',
+   gNumber              bigint not null,
+   primary key (gId)
+);
+
+/*==============================================================*/
+/* Table: Indent                                                */
+/*==============================================================*/
+create table Indent
+(
+   iId                  int not null comment '订单id',
+   iUserId              int not null comment '用户id',
+   iSotreId             int not null comment '商家id',
+   iCatId               int not null comment '商品类别',
+   iGoodsId             int not null comment '商品id',
+   iAddress             varchar(80) not null comment '收货地址',
+   iMessage             varchar(100) comment '用户留言',
+   iPrice               double not null comment '订单金额',
+   iState               varchar(1) not null comment '订单状态',
+   iDate                date not null,
+   primary key (iId)
+);
+
+/*==============================================================*/
+/* Table: Store                                                 */
+/*==============================================================*/
+create table Store
+(
+   sId                  int not null comment '商家id',
+   sName                varchar(20) not null comment '商店名',
+   sUserId              int not null comment '用户id',
+   primary key (sId)
+);
+
+/*==============================================================*/
+/* Table: User                                                  */
+/*==============================================================*/
+create table User
+(
+   uId                  int not null comment '用户id',
+   userName             varchar(20) not null comment '用户账号',
+   password             varchar(20) not null comment '用户密码',
+   uPhone               varchar(11) not null comment '联系手机',
+   uEmail               varchar(30) not null comment '联系邮箱',
+   uLevel               varchar(1) not null comment '用户等级',
+   uImage               varchar(50),
+   primary key (uId)
+);
+
+alter table Address add constraint FK_Reference_19 foreign key (aUserid)
+      references User (uId) on delete restrict on update restrict;
+
+alter table Address add constraint FK_Relationship_1 foreign key ()
+      references User (uId) on delete restrict on update restrict;
+
+alter table Admin add constraint FK_Relationship_13 foreign key ()
+      references Indent (iId) on delete restrict on update restrict;
+
+alter table Category add constraint FK_Relationship_5 foreign key ()
+      references Goods (gId) on delete restrict on update restrict;
+
+alter table Category add constraint FK_Relationship_7 foreign key ()
+      references Admin (aID) on delete restrict on update restrict;
+
+alter table Footprint add constraint FK_Reference_28 foreign key (fUserId)
+      references User (uId) on delete restrict on update restrict;
+
+alter table Footprint add constraint FK_Reference_29 foreign key (fGoodsId)
+      references Goods (gId) on delete restrict on update restrict;
+
+alter table Goods add constraint FK_Reference_21 foreign key (gStoreId)
+      references Store (sId) on delete restrict on update restrict;
+
+alter table Goods add constraint FK_Reference_22 foreign key (gCatId)
+      references Category (cId) on delete restrict on update restrict;
+
+alter table Goods add constraint FK_Reference_23 foreign key ()
+      references Indent (iId) on delete restrict on update restrict;
+
+alter table Goods add constraint FK_Relationship4 foreign key ()
+      references Category (cId) on delete restrict on update restrict;
+
+alter table Goods add constraint FK_Relationship_11 foreign key ()
+      references Indent (iId) on delete restrict on update restrict;
+
+alter table Goods add constraint FK_Relationship_15 foreign key ()
+      references Indent (iId) on delete restrict on update restrict;
+
+alter table Goods add constraint FK_Relationship_4 foreign key ()
+      references Store (sId) on delete restrict on update restrict;
+
+alter table Goods add constraint FK_Relationship_6 foreign key (gCatId)
+      references Category (cId) on delete restrict on update restrict;
+
+alter table Indent add constraint FK_Reference_24 foreign key (iSotreId)
+      references Store (sId) on delete restrict on update restrict;
+
+alter table Indent add constraint FK_Reference_25 foreign key (iUserId)
+      references User (uId) on delete restrict on update restrict;
+
+alter table Indent add constraint FK_Reference_26 foreign key (iCatId)
+      references Category (cId) on delete restrict on update restrict;
+
+alter table Indent add constraint FK_Reference_27 foreign key (iGoodsId)
+      references Goods (gId) on delete restrict on update restrict;
+
+alter table Indent add constraint FK_Relationship_10 foreign key ()
+      references Store (sId) on delete restrict on update restrict;
+
+alter table Indent add constraint FK_Relationship_12 foreign key ()
+      references Goods (gId) on delete restrict on update restrict;
+
+alter table Indent add constraint FK_Relationship_14 foreign key ()
+      references Admin (aID) on delete restrict on update restrict;
+
+alter table Indent add constraint FK_Relationship_9 foreign key ()
+      references User (uId) on delete restrict on update restrict;
+
+alter table Store add constraint FK_Reference_20 foreign key (sUserId)
+      references User (uId) on delete restrict on update restrict;
+
+alter table Store add constraint FK_Relationship_3 foreign key ()
+      references User (uId) on delete restrict on update restrict;
+
+alter table User add constraint FK_Reference_17 foreign key ()
+      references Store (sId) on delete restrict on update restrict;
+
+alter table User add constraint FK_Reference_18 foreign key ()
+      references Address (aId) on delete restrict on update restrict;
+
+alter table User add constraint FK_Relationship_2 foreign key ()
+      references Store (sId) on delete restrict on update restrict;
+
+alter table User add constraint FK_Relationship_8 foreign key ()
+      references Indent (iId) on delete restrict on update restrict;

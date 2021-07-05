@@ -23,7 +23,7 @@ public class HomeFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
-        System.out.println("嘿嘿!");
+//        System.out.println("嘿嘿!");
         // 放行
         filterChain.doFilter(servletRequest,servletResponse);
     }
