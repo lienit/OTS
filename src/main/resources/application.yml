@@ -1,7 +1,7 @@
 # 数据库配置信息
-tableName: ots
-username: 123
-password: 123
+tableName: OTS
+username: sea
+password: 1195751600
 port: 3306
 
 spring:
@@ -19,7 +19,7 @@ server:
 
 # mybatis配置
 mybatis:
-  type-aliases-package: com.edu.ots.entity
+  type-aliases-package: com.cdtu.ots.entity
   configuration:
     call-setters-on-nulls: true     # 解决，查询返回结果含null没有对应字段值问题
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 查看所有执行的SQL语句，在控制台打印
