@@ -17,8 +17,12 @@ import java.util.ArrayList;
 @Mapper
 public interface GoodsMapper {
 
-    @Select("select * from Goods where gStoreId = #{gStoreId}")
-    public ArrayList<Goods> findAllByStoreId(@Param("gStoreId") String gStoreId);
+    @Select("select * from Goods where gStoreId = #{gStoreId} LIMIT #{page},#{size}")
+    public ArrayList<Goods> findAllByStoreIdAndSize(@Param("gStoreId") String gStoreId, @Param("page") int page,
+                                             @Param("size") int size);
+
+    @Select("select count(gId) from Goods where gStoreId = #{gStoreId}")
+    public int findSizeByStoreId(@Param("gStoreId") String gStoreId);
 
     @Delete("delete from Goods where gId = #{gId}")
     public int deleteAllBygID(@Param("gId") String gId);

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @ClassName BusinessManController
@@ -33,10 +34,18 @@ public class BusinessManController {
 
     @PostMapping("/getGoodsData")
     @ResponseBody
-    public String getGoodsData(){
+    public String getGoodsData(int  dataPage,int pageSize){
+        int page = (dataPage - 1) * pageSize;
         ArrayList<Goods> goodsArrayList;
-        goodsArrayList = goodsMapper.findAllByStoreId("123");
+        goodsArrayList = goodsMapper.findAllByStoreIdAndSize("123",page,pageSize);
+
         return JSON.toJSONString(goodsArrayList);
+    }
+
+    @PostMapping("/getGoodsDataSize")
+    @ResponseBody
+    public int getGoodsDataSize(){
+        return goodsMapper.findSizeByStoreId("123");
     }
 
     @PostMapping("/deleteGoodsData")
