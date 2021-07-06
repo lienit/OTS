@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商家中心</title>
+    <script th:src="@{/js/vue.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <style>
+        #app {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .el-header, .el-footer {
+            background-color: #545c64;
+            color: white;
+        }
+
+        .el-main {
+            background-color: #E9EEF3;
+            color: #333;
+            text-align: center;
+        }
+
+        .el-aside {
+            background-color: #545c64;
+            color: #333;
+            text-align: center;
+            height: 86vh;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-menu
+                    text-color="#fff"
+                    active-text-color="white"
+                    background-color="#545c64"
+                    default-active="1"
+                    mode="horizontal"
+                    @select="handleSelect">
+                <el-row>
+                    <el-col :span="21">
+                        <span index="1" style="font-size: x-large; line-height: 60px;">商家管理中心</span>
+                    </el-col>
+                    <el-col :span="3">
+                        <el-submenu index="2">
+                            <template slot="title">欢迎：{{username}}</template>
+                            <el-menu-item index="2-1">个人信息</el-menu-item>
+                            <el-menu-item index="2-2">帮助</el-menu-item>
+                            <el-menu-item index="2-3">退出登录</el-menu-item>
+                        </el-submenu>
+                    </el-col>
+                </el-row>
+            </el-menu>
+        </el-header>
+        <el-container>
+            <el-aside width="200px">
+                <el-menu
+                        default-active="1"
+                        class="el-menu-vertical-demo"
+                        @select="handleSelect"
+                        background-color="#545c64"
+                        text-color="#fff"
+                        active-text-color="#ffd04b">
+                    <el-menu-item index="1">
+                        <i class="el-icon-menu"></i>
+                        <span slot="title">商品管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="2">
+                        <i class="el-icon-document"></i>
+                        <span slot="title">订单管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="3">
+                        <i class="el-icon-setting"></i>
+                        <span slot="title">数据统计</span>
+                    </el-menu-item>
+                </el-menu>
+            </el-aside>
+            <el-main>
+                <template>
+                    <el-table
+                            :data="goodsData"
+                            border
+                            style="width: 100%">
+                        <el-table-column
+                                fixed
+                                prop="gName"
+                                label="商品名称"
+                                width="300">
+                        </el-table-column>
+                        <el-table-column
+                                prop="gCategory"
+                                label="商品类别">
+                        </el-table-column>
+                        <el-table-column
+                                prop="gImage"
+                                label="商品图片">
+                        </el-table-column>
+                        <el-table-column
+                                prop="gParameter"
+                                label="商品参数">
+                        </el-table-column>
+                        <el-table-column
+                                prop="gPrice"
+                                label="商品价格">
+                        </el-table-column>
+                        <el-table-column
+                                prop="gNumber"
+                                label="商品销量">
+                        </el-table-column>
+                        <el-table-column label="操作">
+                            <template slot-scope="scope">
+                                <el-button
+                                        size="mini"
+                                        @click="handleEdit(scope.$index, scope.row)">编辑
+                                </el-button>
+                                <el-button
+                                        size="mini"
+                                        type="danger"
+                                        @click="handleDelete(scope.$index, scope.row)">删除
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </el-main>
+        </el-container>
+        <el-footer>
+            footer
+        </el-footer>
+    </el-container>
+    <el-dialog title="修改信息" :visible.sync="dialogFormVisible" width="40%">
+        <el-form :model="form">
+            <el-form-item label="商品名称" :label-width="formLabelWidth">
+                <el-input v-model="form.gName" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+            <el-form-item label="商品类别" :label-width="formLabelWidth">
+                <el-input v-model="form.gCategory" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+            <el-form-item label="商品图片" :label-width="formLabelWidth">
+                <el-input v-model="form.gImage" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+            <el-form-item label="商品参数" :label-width="formLabelWidth">
+                <el-input v-model="form.gParameter" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+            <el-form-item label="商品价格" :label-width="formLabelWidth">
+                <el-input v-model="form.gPrice" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        </div>
+    </el-dialog>
+
+</div>
+
+</body>
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            username: "admin",
+            goodsData: "",
+            dialogFormVisible: false,
+            form: "",
+            formLabelWidth: '120px',
+        },
+        methods: {
+            handleSelect(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            handleEdit(index, row) {
+                console.log(index, row);
+                this.form = row;
+                this.dialogFormVisible = true;
+            },
+            handleDelete(index, row) {
+                this.$confirm('此操作将永久删除物品:' + row.gName + ', 是否继续?', '删除提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var gId = row.gId;
+                    var _this = this;
+                    $.ajax({
+                        type: "POST",
+                        url: "/deleteGoodsData",
+                        //dataType: "json",
+                        data: {"gId": gId},
+                        success: function (data) {
+                            console.log(data);
+                            if (data != 0) {
+                                _this.getGoodsData();
+                                _this.$message({
+                                    type: 'success',
+                                    message: '删除成功!'
+                                });
+                            } else {
+                                _this.$message({
+                                    showClose: true,
+                                    message: '错了哦，这是一条错误消息',
+                                    type: 'error'
+                                });
+                            }
+
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+            getGoodsData() {
+                $.ajax({
+                    type: "POST",
+                    url: "/getGoodsData",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        app.goodsData = data;
+                    },
+                    error: function (data, type, error) {
+                        console.log(data);
+                    }
+                });
+            }
+        },
+        mounted() {
+            this.getGoodsData();
+        }
+    })
+
+
+
+</script>
+</html>
