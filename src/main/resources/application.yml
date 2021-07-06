@@ -12,6 +12,14 @@ spring:
     username: ${username}
     password: ${password}
     driver-class-name: com.mysql.cj.jdbc.Driver
+#  邮箱配置
+  mail:
+    default-encoding: UTF-8
+    host: smtp.qq.com
+    password: sptxerzynbwogigg
+    username: liwuxin54@qq.com
+
+
 
 # TomCat端口号
 server:
@@ -23,3 +31,9 @@ mybatis:
   configuration:
     call-setters-on-nulls: true     # 解决，查询返回结果含null没有对应字段值问题
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 查看所有执行的SQL语句，在控制台打印
+
+mail:
+  fromMail:
+    addr: liwuxin54@qq.com
+
+

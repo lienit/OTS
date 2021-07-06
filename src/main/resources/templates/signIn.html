@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <script th:src="@{/js/vue.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      /*布局容器*/
+      .el-header, .el-footer {
+
+        color: #333;
+        text-align: center;
+        line-height: 60px;
+      }
+
+      .bg-purple {
+        background: #545c64;
+      }
+      .bg-white {
+        background: #FFFFFF;
+      }
+      .grid-content {
+        border-radius: 4px;
+        min-height: 36px;
+      }
+
+      .el-main {
+
+        color: #333;
+        text-align: center;
+        line-height: 500px;
+      }
+
+
+      .el-container:nth-child(5) .el-aside,
+      .el-container:nth-child(6) .el-aside {
+        line-height: 260px;
+      }
+
+      .el-container:nth-child(7) .el-aside {
+        line-height: 320px;
+      }
+
+      /*卡片*/
+      .text {
+        font-size: 30px;
+      }
+
+      .item {
+        padding: 18px 0;
+      }
+
+      .box-card {
+        width: 480px;
+      }
+    </style>
+</head>
+<body>
+  <div id="signIn">
+    <el-container>
+      <el-header>
+        <el-menu
+                :default-active="activeIndex2"
+                class="el-menu-demo"
+                mode="horizontal"
+                @select="handleSelect"
+                background-color="#545c64"
+                text-color="#fff"
+                active-text-color="#ffd04b">
+          <el-row :gutter="10" type="flex" justify="end" >
+            <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="2">
+              <el-menu-item index="4" >
+                <el-link :underline="false" th:href="@{/home}"  style="color: #FFFFFF">
+                  首页<i class="el-icon-s-goods"></i>
+                </el-link>
+              </el-menu-item>
+            </el-col>
+            <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+              <div class="grid-content bg-purple"></div>
+            </el-col>
+            <el-col :xs="8" :sm="6" :md="6" :lg="6" :xl="6">
+              <div >
+                <el-input placeholder="请输入内容"  v-model="input3" class="input-with-select">
+                  <el-select v-model="select" style="width: 130px" slot="prepend" placeholder="请选择">
+                    <el-option label="商品" value="1"></el-option>
+                    <el-option label="商家" value="2"></el-option>
+
+                  </el-select>
+                  <el-button slot="append" icon="el-icon-search"></el-button>
+                </el-input>
+              </div>
+            </el-col>
+
+            <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4">
+              <div class="grid-content bg-purple"></div>
+            </el-col>
+            <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
+              <el-menu-item index="1">你好，请登录</el-menu-item>
+            </el-col>
+            <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
+              <el-menu-item index="3" >
+                <el-link :underline="false" th:href="@{/signin}"  style="color: #FFFFFF">
+                  免费注册
+                </el-link>
+              </el-menu-item>
+            </el-col>
+            <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
+              <el-submenu index="2">
+                <template slot="title">我的订单</template>
+                <el-menu-item index="2-1">订单查询</el-menu-item>
+                <el-menu-item index="2-2">足迹</el-menu-item>
+
+              </el-submenu>
+            </el-col>
+
+          </el-row>
+        </el-menu>
+      </el-header>
+      <el-main>
+        <el-row :gutter="10" style="margin-top: 30px;margin-left: 30px;font-size: 20px">
+          <el-breadcrumb separator-class="el-icon-arrow-right">
+            <el-breadcrumb-item ><a th:href="@{/home}">首页</a></el-breadcrumb-item>
+            <el-breadcrumb-item><a th:href="@{/signin}">邮箱验证</a></el-breadcrumb-item>
+            <el-breadcrumb-item>注册账号</el-breadcrumb-item>
+
+          </el-breadcrumb>
+        </el-row>
+        <el-row :gutter="10" style="margin-top: 150px;">
+          <el-col :xs="1" :sm="4" :md="8" :lg="8" :xl="8">
+            <div class="grid-content bg-white"></div>
+          </el-col>
+          <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
+            <el-card class="box-card">
+            <div  class="text item" >
+
+
+              <el-form ref="form" :model="form" label-width="80px" >
+                <el-form-item
+                        prop="email"
+                        label="邮箱"
+                        :rules="[
+                      { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+                      { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+                      ]"
+                >
+                  <el-input v-model="form.email" placeholder="请输入你的邮箱"></el-input>
+                </el-form-item>
+                <el-form-item label="验证码">
+                  <el-input v-model="form.name" placeholder="请输入校验码">
+                    <el-button  slot="append" id="eCode" @click="getCode">获取验证码</el-button>
+                  </el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="onSubmit"  style="margin-right: 80px">提交</el-button>
+
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-card>
+          </el-col>
+          <el-col :xs="1" :sm="4" :md="8" :lg="8" :xl="8">
+            <div class="grid-content bg-white"></div>
+          </el-col>
+        </el-row>
+
+      </el-main>
+      <el-footer>Footer</el-footer>
+    </el-container>
+
+
+  </div>
+
+
+  <script >
+    var verify = "";
+
+    var ve = new Vue({
+      el : '#signIn',
+      data : function () {
+        return {
+          activeIndex: '1',
+          activeIndex2: '1',
+          input3: '',
+          select: '',
+          checkCode:'',
+          form: {
+            email : '',
+            name  : ''
+          }
+        }
+      },
+      methods: {
+        handleSelect(key, keyPath) {
+          console.log(key, keyPath);
+        },
+        getCode(){
+          var result = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(ve.form.email);
+
+
+          if (ve.form.email == "" || !result) {
+
+            ve.$message({
+              message: '请填写正确的邮箱！',
+              type: 'warning'
+            });
+          } else {
+
+            var timeDate = new Date().getTime();
+            $.ajax({
+              url: '/getCheckCode',
+              type: 'POST',
+              dataType: 'json',
+              data: {
+                'mailbox': ve.form.email
+              },
+              success: function (result) {
+                  this.checkCode = result;
+                  console.log(this.checkCode);
+              }
+            });
+          }
+        },
+        onSubmit() {
+
+          }
+
+      }
+    });
+
+
+
+  </script>
+</body>
+</html>

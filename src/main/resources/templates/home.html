@@ -7,76 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/index.css}">
     <script th:src="@{/js/index.js}"></script>
     <script th:src="@{/js/jquery.min.js}"></script>
-    <style>
-        /*页面布局容器*/
-        .el-header, .el-footer {
-
-            color: #333;
-            text-align: center;
-            line-height: 60px;
-        }
-
-        .el-aside {
-            background-color: #D3DCE6;
-            color: #333;
-            text-align: center;
-            line-height: 200px;
-        }
-
-        .el-main {
-
-            color: #333;
-            text-align: center;
-            line-height: 160px;
-        }
-
-        body > .el-container {
-            margin-bottom: 40px;
-        }
-
-        .el-container:nth-child(5) .el-aside,
-        .el-container:nth-child(6) .el-aside {
-            line-height: 260px;
-        }
-
-        .el-container:nth-child(7) .el-aside {
-            line-height: 320px;
-        }
-        .el-col {
-            border-radius: 4px;
-        }
-        .bg-purple-dark {
-            background: #99a9bf;
-        }
-        .bg-purple {
-            background: #545c64;
-        }
-        .bg-purple-light {
-            background: #545c64;
-        }
-        .grid-content {
-            border-radius: 4px;
-            min-height: 36px;
-        }
-
-        /*轮播css*/
-        .el-carousel__item h3 {
-            color: #475669;
-            font-size: 14px;
-            opacity: 0.75;
-            line-height: 200px;
-            margin: 0;
-        }
-
-        .el-carousel__item:nth-child(2n) {
-
-        }
-
-        .el-carousel__item:nth-child(2n+1) {
-
-        }
-    </style>
-
+    <link rel="stylesheet" th:href="@{/css/home/home.css}">
 </head>
 <body>
 <div id="test03">
@@ -121,7 +52,11 @@
                         <el-menu-item index="1">你好，请登录</el-menu-item>
                     </el-col>
                     <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
-                        <el-menu-item index="3" >免费注册</el-menu-item>
+                        <el-menu-item index="3" >
+                            <el-link :underline="false" th:href="@{/signin}"  style="color: #FFFFFF">
+                                免费注册
+                            </el-link>
+                        </el-menu-item>
                     </el-col>
                     <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
                         <el-submenu index="2">
@@ -164,7 +99,7 @@
 <!--                                    加载中<span class="dot">...</span>-->
 <!--                                </div>-->
 <!--                            </el-image>-->
-                            <div >
+                           <div >
                                 <i class="el-icon-present"></i>为你推荐<i class="el-icon-present"></i>
                             </div>
 
@@ -198,6 +133,10 @@
         </el-backtop>
     </template>
 </div>
+
+
+
+
 <script>
     var vm = new Vue({
         el : '#test03',
@@ -207,16 +146,16 @@
                 activeIndex2: '1',
                 input3: '',
                 select: '',
-                src:'/image/img.png',
+
                 imgList: [
                     {
-                        src: '/image/1.jpg'
+                        src: '/image/home/1.jpg'
                     },
                     {
-                        src: '/image/2.jpg'
+                        src: '/image/home/2.jpg'
                     },
                     {
-                        src: '/image/3.jpg'
+                        src: '/image/home/3.jpg'
                     }
                 ],
                 // 图片父容器高度
