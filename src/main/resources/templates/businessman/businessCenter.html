@@ -33,6 +33,9 @@
             text-align: center;
             height: 86vh;
         }
+        .el-loading-parent--relative {
+            position: unset!important;
+        }
     </style>
 </head>
 <body>
@@ -259,7 +262,23 @@
                 this.getGoodsData();
             },
             searchGood() {
-
+                var _this = this;
+                $.ajax({
+                    type: "POST",
+                    url: "/searchGoods",
+                    dataType: "json",
+                    data: {
+                        "searchIn": this.searchIn,
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        _this.goodsData = data;
+                        _this.total = Object.keys(data).length;
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
             },
             change(val){
                 this.form.cId = val;
@@ -361,7 +380,6 @@
                 });
                 if (isShow === 2) {
                     loading.close();
-
                 }
             },
             updateGoodData() {

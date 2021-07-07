@@ -125,4 +125,16 @@ public class BusinessManController {
 
         return JSON.toJSONString(categoryArrayList);
     }
+
+    @PostMapping("/searchGoods")
+    @ResponseBody
+    public String searchGoods(String searchIn){
+        String err = "1";
+        try {
+            err = JSON.toJSONString(goodsMapper.findAllGoodsBySearchIn("%"+searchIn+"%", "123"));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return err;
+    }
 }

@@ -49,7 +49,7 @@ public interface GoodsMapper {
      * @return 成功影响条目数
      */
     @Update("UPDATE Goods SET gCatId = #{goods.gCatId}, gName = #{goods.gName}, gImage = #{goods.gImage}, " +
-            "gPrice = #{goods.gPrice}, gParameter = #{goods.gParameter}," +
+            "gPrice = #{goods.gPrice}, gParameter = #{goods.gParameter}" +
             "where gId = #{goods.gId}")
     public int updateGoodsDataByGid(@Param("goods") Goods goods);
 
@@ -64,4 +64,15 @@ public interface GoodsMapper {
      */
     @Select("select * from category")
     public ArrayList<Map<String, Object>> findAllCategory();
+
+    /**
+     * 更具用户输入对内容进行商品查询
+     * @param searchIn 用户输入的内容
+     * @param gStoreId 用户商家的id
+     * @return 商品数组
+     */
+    @Select("select * from Goods where gStoreId = #{gStoreId} and gName like #{searchIn} " +
+            "or gParameter like #{searchIn}")
+    public ArrayList<Map<String, Object>> findAllGoodsBySearchIn(@Param("searchIn") String searchIn,
+                                                                 @Param("gStoreId") String gStoreId);
 }
