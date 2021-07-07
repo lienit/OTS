@@ -1,6 +1,7 @@
 package com.cdtu.ots.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.cdtu.ots.entity.Goods;
 import com.cdtu.ots.mapper.GoodsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @ClassName BusinessManController
@@ -44,7 +46,7 @@ public class BusinessManController {
     @ResponseBody
     public String getGoodsData(int dataPage, int pageSize) {
         int page = (dataPage - 1) * pageSize;
-        ArrayList<Goods> goodsArrayList;
+        ArrayList<Map<String, Object>> goodsArrayList;
         goodsArrayList = goodsMapper.findAllByStoreIdAndSize("123", page, pageSize);
 
         return JSON.toJSONString(goodsArrayList);
@@ -81,13 +83,46 @@ public class BusinessManController {
      */
     @PostMapping("/updateGoodsData")
     @ResponseBody
-    public int updateGoodsData(Goods goods){
-        return goodsMapper.updateGoodsDataByGid(goods);
+    public int updateGoodsData(String goods){
+        System.out.println(goods);
+        JSONObject good_Obj = JSONObject.parseObject(goods);
+        Goods _goods = new Goods(good_Obj.getInteger("gId"), good_Obj.getInteger("cId"),
+                123, good_Obj.getString("gName"),
+                good_Obj.getDouble("gPrice"), good_Obj.getString("gImage"),
+                good_Obj.getString("gParameter"));
+        int err = 0;
+        try {
+            err = goodsMapper.updateGoodsDataByGid(_goods);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return err;
     }
 
     @PostMapping("/addGoodsData")
     @ResponseBody
-    public int addGoodsData(Goods goods){
-        return goodsMapper.addGoodData(goods);
+    public int addGoodsData(String goods){
+        int err = 0;
+        JSONObject good_Obj = JSONObject.parseObject(goods);
+        Goods _goods = new Goods(good_Obj.getInteger("gCatId"), 123, good_Obj.getString("gName"),
+                good_Obj.getDouble("gPrice"), good_Obj.getString("gImage"),
+                good_Obj.getString("gParameter"), good_Obj.getInteger("gNumber"));
+
+        try {
+            err = goodsMapper.addGoodData(_goods);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return err;
+    }
+
+    @PostMapping("getCategoryData")
+    @ResponseBody
+    public String getCategoryData(){
+        ArrayList<Map<String, Object>> categoryArrayList;
+        categoryArrayList = goodsMapper.findAllCategory();
+
+        return JSON.toJSONString(categoryArrayList);
     }
 }

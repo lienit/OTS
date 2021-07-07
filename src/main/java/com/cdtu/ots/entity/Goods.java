@@ -15,7 +15,6 @@ public class Goods {
     private int gStoreId;
     private String gName;
     private Double gPrice;
-    private String gCategory;
     private String gImage;
     private String gParameter;
     private int gNumber;
@@ -24,14 +23,25 @@ public class Goods {
 
     }
 
-    public Goods(int gCatId, int gStoreId, String gName, Double gPrice, String gCategory, String gImage, String gParameter) {
+    public Goods(int gId, int gCatId, int gStoreId, String gName, Double gPrice, String gImage, String gParameter) {
+        this.gId = gId;
         this.gCatId = gCatId;
         this.gStoreId = gStoreId;
         this.gName = gName;
         this.gPrice = gPrice;
-        this.gCategory = gCategory;
         this.gImage = gImage;
         this.gParameter = gParameter;
+    }
+
+    public Goods(int gCatId, int gStoreId, String gName, Double gPrice, String gImage,
+                 String gParameter, int gNumber) {
+        this.gCatId = gCatId;
+        this.gStoreId = gStoreId;
+        this.gName = gName;
+        this.gPrice = gPrice;
+        this.gImage = gImage;
+        this.gParameter = gParameter;
+        this.gNumber = gNumber;
     }
 
     public int getgId() {
@@ -74,14 +84,6 @@ public class Goods {
         this.gPrice = gPrice;
     }
 
-    public String getgCategory() {
-        return gCategory;
-    }
-
-    public void setgCategory(String gCategory) {
-        this.gCategory = gCategory;
-    }
-
     public String getgImage() {
         return gImage;
     }
@@ -114,7 +116,6 @@ public class Goods {
                 ", gStoreId=" + gStoreId +
                 ", gName='" + gName + '\'' +
                 ", gPrice=" + gPrice +
-                ", gCategory='" + gCategory + '\'' +
                 ", gImage='" + gImage + '\'' +
                 ", gParameter='" + gParameter + '\'' +
                 ", gNumber=" + gNumber +

@@ -110,7 +110,7 @@
                                 width="300">
                         </el-table-column>
                         <el-table-column
-                                prop="gCategory"
+                                prop="cName"
                                 label="商品类别">
                         </el-table-column>
                         <el-table-column
@@ -171,7 +171,14 @@
                 <el-input v-model="form.gName" autocomplete="off" style="width: 80%;"></el-input>
             </el-form-item>
             <el-form-item label="商品类别" :label-width="formLabelWidth">
-                <el-input v-model="form.gCategory" autocomplete="off" style="width: 80%;"></el-input>
+                <el-select v-model="value" filterable placeholder="请选择" @change="change($event)">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.cId"
+                            :label="item.cName"
+                            :value="item.cId">
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="商品图片" :label-width="formLabelWidth">
                 <el-input v-model="form.gImage" autocomplete="off" style="width: 80%;"></el-input>
@@ -198,7 +205,30 @@
         data: {
             username: "admin",
             goodsData: "",
-            form: "",
+            form: {
+                "gCatId": "",
+                "gId": "",
+                "gImage": "",
+                "gName": "",
+                "gNumber": "",
+                "gParameter": "",
+                "gPrice": "",
+                "gStoreId": "",
+                "cName": "",
+            },
+            addForm: {
+                "gCatId": 1,
+                "gId": "",
+                "gImage": "",
+                "gName": "",
+                "gNumber": 0,
+                "gParameter": "",
+                "gPrice": "",
+                "gStoreId": 123,
+                "cName": "",
+            },
+            value: "",
+            options: [{}],
             dialogFormVisible: false,
             formLabelWidth: '120px',
             currentPage: 1,          //当前页数
@@ -215,6 +245,8 @@
                 this.form = JSON.parse(JSON.stringify(row));
                 this.dialogTitle = "修改信息";
                 this.dialogFormVisible = true;
+                this.getCategoryData();
+                this.value = this.form.cName;
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
@@ -228,6 +260,9 @@
             },
             searchGood() {
 
+            },
+            change(val){
+                this.form.cId = val;
             },
             handleDelete(index, row) {
                 this.$confirm('此操作将永久删除物品:' + row.gName + ', 是否继续?', '删除提示', {
@@ -247,7 +282,7 @@
                             _this.loadingStart(2);
                             console.log(data);
                             if (data != 0) {
-                                _this.getGoodsData();
+                                _this.updateGoodsData();
                                 _this.$message({
                                     type: 'success',
                                     message: '删除成功!'
@@ -310,25 +345,26 @@
                 });
             },
             dialogOk() {
-                if (this.dialogTitle === "修改信息"){
+                if (this.dialogTitle === "修改信息") {
                     this.updateGoodData();
-                }if (this.dialogTitle === "修改信息"){
+                }
+                if (this.dialogTitle === "新增信息") {
                     this.addGoodData();
                 }
             },
-            loadingStart(isShow){
+            loadingStart(isShow) {
                 const loading = this.$loading({
                     lock: true,
                     text: 'Loading',
                     spinner: 'el-icon-loading',
                     background: 'rgba(255, 255, 255, 0.7)'
                 });
-                if (isShow === 2){
+                if (isShow === 2) {
                     loading.close();
 
                 }
             },
-            updateGoodData(){
+            updateGoodData() {
                 this.$confirm('此操作将修改物品信息, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -336,17 +372,18 @@
                 }).then(() => {
                     this.loadingStart(1);
                     var _this = this;
-                    console.log(this.form);
                     $.ajax({
                         type: "POST",
                         url: "/updateGoodsData",
                         //dataType: "json",
-                        data: this.form,
+                        data: {
+                            "goods" : JSON.stringify(this.form)
+                        },
                         success: function (data) {
                             _this.loadingStart(2);
                             console.log(data);
                             if (data !== 0) {
-                                _this.getGoodsData();
+                                _this.updateGoodsData();
                                 _this.$message({
                                     type: 'success',
                                     message: '修改成功!'
@@ -370,12 +407,13 @@
 
                 });
             },
-            handAddGood(){
-                this.form = "";
+            handAddGood() {
+                this.form = this.addForm;
                 this.dialogTitle = "新增信息";
                 this.dialogFormVisible = true;
+                this.getCategoryData();
             },
-            addGoodData(){
+            addGoodData() {
                 this.$confirm('此操作将添加新物品信息, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -387,12 +425,14 @@
                     $.ajax({
                         type: "POST",
                         url: "/addGoodsData",
-                        data: this.form,
+                        data: {
+                            "goods": JSON.stringify(_this.form),
+                        },
                         success: function (data) {
                             _this.loadingStart(2);
                             console.log(data);
                             if (data !== 0) {
-                                _this.getGoodsData();
+                                _this.updateGoodsData();
                                 _this.$message({
                                     type: 'success',
                                     message: '添加成功!'
@@ -416,10 +456,28 @@
 
                 });
             },
+            updateGoodsData() {
+                this.getGoodsDataSize();
+                this.getGoodsData();
+            },
+            getCategoryData() {
+                var _this = this;
+                $.ajax({
+                    type: "POST",
+                    url: "/getCategoryData",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        _this.options = data;
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                })
+            },
         },
         mounted() {
-            this.getGoodsDataSize();
-            this.getGoodsData();
+            this.updateGoodsData();
         }
     })
 
