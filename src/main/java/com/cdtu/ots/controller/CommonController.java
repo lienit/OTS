@@ -1,13 +1,18 @@
 package com.cdtu.ots.Controller;
 
+import com.alibaba.fastjson.JSON;
 import com.cdtu.ots.entity.User;
 import com.cdtu.ots.service.MailService;
 import com.cdtu.ots.service.UserService;
 import com.cdtu.ots.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -26,9 +31,51 @@ public class CommonController {
         return "home";
     }
 
+    @RequestMapping("/iStatus")
+    @ResponseBody
+    public String iStatus(HttpServletRequest request){
+        String message = "";
+        User user = (User) request.getSession().getAttribute("user");
+        if (user!=null){
+            String s = JSON.toJSONString(user);
+            return s;
+        }
+        return message;
+    }
+
     @RequestMapping("/login")
     public String Login(){
+
         return "login";
+    }
+
+    @PostMapping("/isLogin")
+    @ResponseBody
+    public String isLogin(String name, String password, HttpServletRequest request){
+        String message = "";
+
+        String md5 = MD5Util.getMD5(password);
+        User byLogin = userService.findByLogin(name, md5);
+        if (byLogin != null){
+            request.getSession().setAttribute("user",byLogin);
+            if (byLogin.getuLevel().equals("1") || byLogin.getuLevel().equals("2")){
+                message = "user";
+            }else {
+                message = "store";
+            }
+        }else{
+            message = "error";
+        }
+
+        return message;
+
+    }
+
+    @PostMapping("/quit")
+    @ResponseBody
+    public String quit(HttpServletRequest request){
+        request.getSession().removeAttribute("user");
+        return "success";
     }
 
     @RequestMapping("/signin")
@@ -88,7 +135,8 @@ public class CommonController {
         }
         else {
             User user = new User();
-            user.setPassword(password);
+            String md5 = MD5Util.getMD5(password);
+            user.setPassword(md5);
             user.setuEmail(emila);
             user.setuPhone(phone);
             user.setUserName(username);

@@ -15,6 +15,16 @@ public class UserService {
        return user;
     }
 
+    public User findByLogin(String username, String password){
+        User byLogin = userMapper.findByLogin(username, password);
+        return byLogin;
+    }
+
+    public User findByLevel(String uLevel){
+        User byLevel = userMapper.findByLevel(uLevel);
+        return byLevel;
+    }
+
     public Boolean insertUser(User user){
         Boolean aBoolean = userMapper.insertUser(user);
         return aBoolean;
