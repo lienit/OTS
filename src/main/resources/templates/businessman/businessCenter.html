@@ -85,6 +85,19 @@
                 </el-menu>
             </el-aside>
             <el-main>
+                <el-row>
+                    <el-col :span="1">
+                        <el-button icon="el-icon-plus" @click="handAddGood">添加商品</el-button>
+                    </el-col>
+                    <el-col :span="6" :push="17">
+                        <div style="margin-bottom: 10px;">
+                            <el-input placeholder="请输入内容" v-model="searchIn">
+                                <el-button slot="append" icon="el-icon-search" @click="searchGood">搜索</el-button>
+                            </el-input>
+                        </div>
+                    </el-col>
+                </el-row>
+
                 <template>
                     <el-table
                             :data="goodsData"
@@ -152,7 +165,7 @@
             footer
         </el-footer>
     </el-container>
-    <el-dialog title="修改信息" :visible.sync="dialogFormVisible" width="40%">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" width="40%">
         <el-form :model="form">
             <el-form-item label="商品名称" :label-width="formLabelWidth">
                 <el-input v-model="form.gName" autocomplete="off" style="width: 80%;"></el-input>
@@ -169,11 +182,10 @@
             <el-form-item label="商品价格" :label-width="formLabelWidth">
                 <el-input v-model="form.gPrice" autocomplete="off" style="width: 80%;"></el-input>
             </el-form-item>
-
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+            <el-button type="primary" @click="dialogOk">确 定</el-button>
         </div>
     </el-dialog>
 
@@ -192,13 +204,16 @@
             currentPage: 1,          //当前页数
             pageSize: 10,            //每页显示条目数
             total: 0,               //分页总条数
+            searchIn: "",
+            dialogTitle: "",
         },
         methods: {
             handleSelect(key, keyPath) {
                 console.log(key, keyPath);
             },
             handleEdit(index, row) {
-                this.form = row;
+                this.form = JSON.parse(JSON.stringify(row));
+                this.dialogTitle = "修改信息";
                 this.dialogFormVisible = true;
             },
             handleSizeChange(val) {
@@ -211,21 +226,25 @@
                 this.currentPage = val;
                 this.getGoodsData();
             },
+            searchGood() {
 
+            },
             handleDelete(index, row) {
                 this.$confirm('此操作将永久删除物品:' + row.gName + ', 是否继续?', '删除提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    var gId = row.gId;
                     var _this = this;
+                    var gId = row.gId;
+                    this.loadingStart(1);
                     $.ajax({
                         type: "POST",
                         url: "/deleteGoodsData",
                         //dataType: "json",
                         data: {"gId": gId},
                         success: function (data) {
+                            _this.loadingStart(2);
                             console.log(data);
                             if (data != 0) {
                                 _this.getGoodsData();
@@ -244,6 +263,7 @@
                         },
                         error: function (err) {
                             console.log(err);
+                            _this.loadingStart(2);
                         }
 
                     });
@@ -264,8 +284,8 @@
                     url: "/getGoodsData",
                     dataType: "json",
                     data: {
-                        "dataPage" : dataPage,
-                        "pageSize" : dataSize,
+                        "dataPage": dataPage,
+                        "pageSize": dataSize,
                     },
                     success: function (data) {
                         console.log(data);
@@ -288,14 +308,120 @@
                         console.log(error);
                     }
                 });
-            }
+            },
+            dialogOk() {
+                if (this.dialogTitle === "修改信息"){
+                    this.updateGoodData();
+                }if (this.dialogTitle === "修改信息"){
+                    this.addGoodData();
+                }
+            },
+            loadingStart(isShow){
+                const loading = this.$loading({
+                    lock: true,
+                    text: 'Loading',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(255, 255, 255, 0.7)'
+                });
+                if (isShow === 2){
+                    loading.close();
+
+                }
+            },
+            updateGoodData(){
+                this.$confirm('此操作将修改物品信息, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.loadingStart(1);
+                    var _this = this;
+                    console.log(this.form);
+                    $.ajax({
+                        type: "POST",
+                        url: "/updateGoodsData",
+                        //dataType: "json",
+                        data: this.form,
+                        success: function (data) {
+                            _this.loadingStart(2);
+                            console.log(data);
+                            if (data !== 0) {
+                                _this.getGoodsData();
+                                _this.$message({
+                                    type: 'success',
+                                    message: '修改成功!'
+                                });
+                            } else {
+                                _this.$message({
+                                    showClose: true,
+                                    message: '修改失败，请重试！',
+                                    type: 'error'
+                                });
+                            }
+                            _this.dialogFormVisible = false;
+                        },
+                        error: function (err) {
+                            console.log(err);
+                            _this.dialogFormVisible = false;
+                            _this.loadingStart(2);
+                        }
+                    })
+                }).catch(() => {
+
+                });
+            },
+            handAddGood(){
+                this.form = "";
+                this.dialogTitle = "新增信息";
+                this.dialogFormVisible = true;
+            },
+            addGoodData(){
+                this.$confirm('此操作将添加新物品信息, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.loadingStart(1);
+                    var _this = this;
+                    console.log(this.form);
+                    $.ajax({
+                        type: "POST",
+                        url: "/addGoodsData",
+                        data: this.form,
+                        success: function (data) {
+                            _this.loadingStart(2);
+                            console.log(data);
+                            if (data !== 0) {
+                                _this.getGoodsData();
+                                _this.$message({
+                                    type: 'success',
+                                    message: '添加成功!'
+                                });
+                            } else {
+                                _this.$message({
+                                    showClose: true,
+                                    message: '添加失败，请重试！',
+                                    type: 'error'
+                                });
+                            }
+                            _this.dialogFormVisible = false;
+                        },
+                        error: function (err) {
+                            console.log(err);
+                            _this.dialogFormVisible = false;
+                            _this.loadingStart(2);
+                        }
+                    })
+                }).catch(() => {
+
+                });
+            },
         },
         mounted() {
             this.getGoodsDataSize();
             this.getGoodsData();
         }
     })
-
 
 
 </script>
