@@ -9,8 +9,8 @@ spring:
     cache: false
   datasource:
     url: jdbc:mysql://127.0.0.1:${port}/${tableName}?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
-    username: ${username}
-    password: ${password}
+    username: sea
+    password: 1195751600
     driver-class-name: com.mysql.cj.jdbc.Driver
 #  邮箱配置
   mail:

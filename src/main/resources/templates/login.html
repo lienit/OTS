@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+  <script th:src="@{/js/vue.min.js}"></script>
+  <link rel="stylesheet" th:href="@{/css/index.css}">
+  <script th:src="@{/js/index.js}"></script>
+  <script th:src="@{/js/jquery.min.js}"></script>
+  <link rel="stylesheet" th:href="@{/css/common/login.css}">
+  <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
+</head>
+<body>
+<div id="app">
+  <el-menu
+          :default-active="activeIndex2"
+          class="el-menu-demo"
+          mode="horizontal"
+          @select="handleSelect"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b">
+    <el-row :gutter="10" type="flex" justify="end" >
+      <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="2">
+        <el-menu-item index="4" >
+          <el-link :underline="false" th:href="@{/home}"  style="color: #FFFFFF">
+            首页<i class="el-icon-s-goods"></i>
+          </el-link>
+        </el-menu-item>
+      </el-col>
+      <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+        <div class="grid-content bg-purple"></div>
+      </el-col>
+      <el-col :xs="8" :sm="6" :md="6" :lg="6" :xl="6">
+        <div content="true" >
+          <el-input placeholder="请输入内容"  v-model="input3" class="input-with-select">
+            <el-select v-model="select" style="width: 130px" slot="prepend" placeholder="请选择">
+              <el-option label="商品" value="1"></el-option>
+              <el-option label="商家" value="2"></el-option>
+
+            </el-select>
+            <el-button slot="append" icon="el-icon-search"></el-button>
+          </el-input>
+        </div>
+      </el-col>
+
+      <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4">
+        <div class="grid-content bg-purple"></div>
+      </el-col>
+      <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
+        <el-menu-item index="1">你好，请登录</el-menu-item>
+      </el-col>
+      <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
+        <el-menu-item index="3" >
+          <el-link :underline="false" th:href="@{/signin}"  style="color: #FFFFFF">
+            免费注册
+          </el-link>
+        </el-menu-item>
+      </el-col>
+      <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
+        <el-submenu index="2">
+          <template slot="title">我的订单</template>
+          <el-menu-item index="2-1">订单查询</el-menu-item>
+          <el-menu-item index="2-2">足迹</el-menu-item>
+
+        </el-submenu>
+      </el-col>
+
+    </el-row>
+  </el-menu>
+  <div id="login-box">
+
+    <h1>Login</h1>
+    <el-form ref="form" :model="form" label-width="80px">
+      <el-form-item label="用户名:" >
+        <el-input v-model="form.name"></el-input>
+      </el-form-item>
+      <el-form-item label="密码:" >
+        <el-input v-model="form.password" type="password"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit"  style="margin-right: 80px">
+          login
+        </el-button>
+
+      </el-form-item>
+    </el-form>
+  </div>
+</div>
+
+
+<script>
+  var ve = new Vue({
+    el :'#app',
+    data:function (){
+      return {
+        activeIndex: '1',
+        activeIndex2: '1',
+        input3 : '',
+        select: "",
+        form:{
+          name : '',
+          password : ''
+        }
+      };
+    },
+    methods: {
+      handleSelect(key, keyPath) {
+        console.log(key, keyPath);
+      },
+      onSubmit(){
+        var uPattern = /^[a-zA-Z0-9_-]{4,16}$/;
+        var pPattern = /^.*(?=.{6,32})(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).*$/;
+        if (ve.form.name == "" || !uPattern.test(ve.form.username)){
+          ve.$message({
+            message: '请填写用户名！',
+            type: 'warning'
+          });
+        }else if (ve.form.password == "" || !pPattern.test(ve.form.password)){
+          ve.$message({
+            message: '请填写正确密码！',
+            type: 'warning'
+          });
+        }else {
+          $.ajax({
+            url: '/isLogin',
+            type: 'POST',
+            dataType: 'text',
+            data: {
+              'name' : ve.form.name,
+              'password' : ve.form.password
+            },
+            success : function (result){
+              if (result=="user"){
+                ve.$message({
+                  message: '登录成功！',
+                  type: 'warning'
+                });
+                window.location.replace("/home");
+              }else  if (result == "store"){
+                ve.$message({
+                  message: '登录成功！',
+                  type: 'warning'
+                });
+
+              }else if (result == "error"){
+                ve.$message({
+                  message: '用户不存在或密码错误！',
+                  type: 'warning'
+                });
+              }
+            }
+          });
+        }
+      }
+    }
+  })
+</script>
+</body>
+</html>

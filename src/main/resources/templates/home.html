@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/index.css}">
     <script th:src="@{/js/index.js}"></script>
     <script th:src="@{/js/jquery.min.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/home/home.css}">
+    <link rel="stylesheet" th:href="@{/css/common/home.css}">
 </head>
 <body>
 <div id="test03">
@@ -48,16 +48,54 @@
                     <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4">
                         <div class="grid-content bg-purple"></div>
                     </el-col>
-                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
-                        <el-menu-item index="1">你好，请登录</el-menu-item>
-                    </el-col>
-                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
-                        <el-menu-item index="3" >
-                            <el-link :underline="false" th:href="@{/signin}"  style="color: #FFFFFF">
-                                免费注册
-                            </el-link>
-                        </el-menu-item>
-                    </el-col>
+                        <div class="userStatus1"  hidden>
+                            <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="2">
+                                <template >
+                                    <el-popover
+                                            placement="top-start"
+                                            title="标题"
+                                            width="300"
+                                            hight="150"
+                                            trigger="hover"
+                                            >
+                                            <div >
+                                                <el-container>
+                                                    <el-aside width="150px">Aside</el-aside>
+                                                    <el-main>
+
+                                                            <el-breadcrumb separator="/">
+                                                                <el-breadcrumb-item ><el-link target="_blank">账号管理</el-link></el-breadcrumb-item>
+                                                                <el-breadcrumb-item><el-link @click="quit" target="_blank">退出</el-link></el-breadcrumb-item>
+                                                            </el-breadcrumb>
+
+                                                        <el-row>
+                                                            <el-col :span="24"><div style="line-height: 0px;margin-top: 30px">会员积分：{{integral}}</div></el-col>
+                                                        </el-row>
+                                                        <el-row>
+                                                            <el-col :span="24"><div style="line-height: 0px;margin-top: 40px">{{vip}}</div></el-col>
+                                                        </el-row>
+
+
+                                                    </el-main>
+                                                </el-container>
+                                            </div>
+                                        <el-menu-item index="1" slot="reference" v-model="username" style="width: 300px;background: #545c64">{{username}}</el-menu-item>
+                                    </el-popover>
+                                </template>
+                            </el-col>
+                    </div>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
+                            <el-menu-item index="1"><el-link :underline="false" th:href="@{/login}"  style="color: #FFFFFF">
+                                你好，请登录！
+                            </el-link></el-menu-item>
+                        </el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
+                            <el-menu-item index="3" >
+                                <el-link :underline="false" th:href="@{/signin}"  style="color: #FFFFFF">
+                                    免费注册
+                                </el-link>
+                            </el-menu-item>
+                        </el-col>
                     <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
                         <el-submenu index="2">
                             <template slot="title">我的订单</template>
@@ -114,30 +152,33 @@
         </el-container>
     </el-container>
 
-    <template>
-        Scroll down to see the bottom-right button.
-        <el-backtop target=".page-component__scroll .el-scrollbar__wrap" :bottom="100">
-            <div
-                    style="{
-        height: 100%;
-        width: 100%;
-        background-color: #f2f5f6;
-        box-shadow: 0 0 6px rgba(0,0,0, .12);
-        text-align: center;
-        line-height: 40px;
-        color: #1989fa;
-      }"
-            >
-                UP
-            </div>
-        </el-backtop>
-    </template>
+
 </div>
 
 
 
 
 <script>
+    window.onload = function (){
+        $.ajax({
+            url:'/iStatus',
+            type: 'POST',
+            dataType : 'text',
+            success : function (result){
+                console.log(result)
+                if (result!=""){
+                    var parse = JSON.parse(result);
+                    vm.username = parse.userName;
+                    $('.userStatus1').show();
+                    $('.userStatus2').hide();
+                    if (parse.uLevel!="3"){
+                        vm.vip = "普通会员";
+                    }
+                }
+            }
+        })
+    }
+
     var vm = new Vue({
         el : '#test03',
         data : function () {
@@ -146,16 +187,18 @@
                 activeIndex2: '1',
                 input3: '',
                 select: '',
-
+                username : '',
+                vip:'',
+                integral:'0',
                 imgList: [
                     {
-                        src: '/image/home/1.jpg'
+                        src: '/image/common/1.jpg'
                     },
                     {
-                        src: '/image/home/2.jpg'
+                        src: '/image/common/2.jpg'
                     },
                     {
-                        src: '/image/home/3.jpg'
+                        src: '/image/common/3.jpg'
                     }
                 ],
                 // 图片父容器高度
@@ -167,6 +210,19 @@
         methods: {
             handleSelect(key, keyPath) {
                 console.log(key, keyPath);
+            },
+            quit(){
+                $.ajax({
+                    url: '/quit',
+                    type: 'POST',
+                    dataType: 'text',
+                    success: function (result) {
+                        if (result=="success"){
+                            vm.username = "";
+                            window.location.reload();
+                        }
+                    }
+                })
             }
         }
     })
