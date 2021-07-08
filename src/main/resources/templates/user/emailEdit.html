@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <script th:src="@{/js/vue.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <<link rel="stylesheet" th:href="@{/css/common/sigin.css}">
+
+</head>
+<body>
+  <div id="signIn">
+    <el-container>
+      <el-header>
+        <el-menu
+                text-color="#fff"
+                active-text-color="white"
+                background-color="#545c64"
+                default-active="1"
+                mode="horizontal"
+                @select="handleSelect">
+          <el-row>
+            <el-col :span="19">
+              <span index="1" style="font-size: x-large; line-height: 60px;">账号管理</span>
+            </el-col>
+            <el-col :span="2">
+              <el-menu-item index="4" >
+                <el-link :underline="false" th:href="@{/home}"  style="color: #FFFFFF;margin-left: 25px">
+                  首页<i class="el-icon-s-goods"></i>
+                </el-link>
+              </el-menu-item>
+            </el-col>
+            <el-col :span="3">
+              <el-submenu index="2">
+                <template slot="title">欢迎：{{form.username}}</template>
+                <el-menu-item index="2-1">我的订单</el-menu-item>
+                <el-menu-item index="2-2" ><el-link th:href="@{/pswEdit}" :underline="false"  style="color: #FFFFFF" target="_blank">修改密码</el-link></el-menu-item>
+                <el-menu-item index="2-3">足迹</el-menu-item>
+                <el-menu-item index="2-4" @click="quit">退出登录</el-menu-item>
+              </el-submenu>
+            </el-col>
+          </el-row>
+        </el-menu>
+      </el-header>
+      <el-main>
+        <el-row :gutter="10" style="margin-top: 30px;margin-left: 30px;font-size: 20px">
+          <el-breadcrumb separator-class="el-icon-arrow-right">
+            <el-breadcrumb-item ><a th:href="@{/home}">首页</a></el-breadcrumb-item>
+            <el-breadcrumb-item ><a @click="showEmila">邮箱验证</a></el-breadcrumb-item>
+            <el-breadcrumb-item>修改邮箱</el-breadcrumb-item>
+
+          </el-breadcrumb>
+        </el-row>
+        <el-row :gutter="10" style="margin-top: 150px;">
+          <el-col :xs="1" :sm="4" :md="8" :lg="8" :xl="8">
+            <div class="grid-content bg-white"></div>
+          </el-col>
+          <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
+            <el-card class="box-card" id="card1"  >
+              <div  class="text item" >
+
+
+                <el-form ref="form" :model="form" label-width="80px"  >
+                  <el-form-item
+                          prop="email"
+                          label="邮箱"
+                          :rules="[
+                        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+                        { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+                        ]"
+                  >
+                    {{form.email}}
+                  </el-form-item>
+                  <el-form-item label="验证码">
+                    <el-input v-model="form.authCode" placeholder="请输入校验码">
+                      <el-button  slot="append" id="eCode" @click="getCode">获取验证码</el-button>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" @click="onSubmit"  style="margin-right: 80px">提交</el-button>
+
+                  </el-form-item>
+                </el-form>
+              </div>
+          </el-card>
+            <el-card class="box-card" id="card2" hidden >
+              <div  class="text item" >
+                <el-form ref="form" :model="form" label-width="80px" style="width: 80%;margin-left: 30px" >
+                  <el-form-item
+                          prop="email"
+                          label="邮箱"
+                          :rules="[
+                        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+                        { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+                        ]"
+                  >
+                    <el-input v-model="form.wEmail" placeholder="请输入新的的邮箱"></el-input>
+                  </el-form-item>
+                  <el-form-item label="验证码">
+                    <el-input v-model="form.authCode" placeholder="请输入校验码">
+                      <el-button  slot="append" id="eCode1" @click="getCode1">获取验证码</el-button>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" @click="onSignIn" >提交</el-button>
+
+                  </el-form-item>
+                </el-form>
+
+              </div>
+            </el-card>
+
+          </el-col>
+          <el-col :xs="1" :sm="4" :md="8" :lg="8" :xl="8">
+            <div class="grid-content bg-white"></div>
+          </el-col>
+        </el-row>
+
+      </el-main>
+      <el-footer>Footer</el-footer>
+    </el-container>
+
+
+  </div>
+
+
+  <script th:src="@{/js/user/emailEdit.js}" >
+
+
+
+
+  </script>
+</body>
+</html>

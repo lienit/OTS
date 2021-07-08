@@ -53,18 +53,20 @@
                                 <template >
                                     <el-popover
                                             placement="top-start"
-                                            title="标题"
+                                            title="用户信息"
                                             width="300"
                                             hight="150"
                                             trigger="hover"
                                             >
                                             <div >
                                                 <el-container>
-                                                    <el-aside width="150px">Aside</el-aside>
+                                                    <el-aside width="150px"><div>
+                                                        <el-avatar :size="150"></el-avatar>
+                                                    </div></el-aside>
                                                     <el-main>
 
                                                             <el-breadcrumb separator="/">
-                                                                <el-breadcrumb-item ><el-link target="_blank">账号管理</el-link></el-breadcrumb-item>
+                                                                <el-breadcrumb-item ><el-link th:href="@{/userInfo}" target="_blank">账号管理</el-link></el-breadcrumb-item>
                                                                 <el-breadcrumb-item><el-link @click="quit" target="_blank">退出</el-link></el-breadcrumb-item>
                                                             </el-breadcrumb>
 
