@@ -4,6 +4,7 @@ import com.cdtu.ots.entity.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface UserMapper {
@@ -18,5 +19,11 @@ public interface UserMapper {
 
     @Insert("insert into user(userName,password,uPhone,uEmail) values(#{userName},#{password},#{uPhone},#{uEmail})")
     public Boolean insertUser(User user);
+
+    @Update("update user set uEmail=#{email} where userName = #{username}")
+    public boolean updateEmail(String username, String email);
+
+    @Update("update user set password=#{password} where userName = #{username}")
+    public Boolean updatePsw(String username, String password);
 
 }

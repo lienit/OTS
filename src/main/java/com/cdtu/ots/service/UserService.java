@@ -29,4 +29,13 @@ public class UserService {
         Boolean aBoolean = userMapper.insertUser(user);
         return aBoolean;
     }
+
+    public boolean updateEmail(String username, String email){
+        boolean b = userMapper.updateEmail(username, email);
+        return  b;
+    }
+    public Boolean updatePsw(String username, String password){
+        Boolean aBoolean = userMapper.updatePsw(username, password);
+        return aBoolean;
+    }
 }
