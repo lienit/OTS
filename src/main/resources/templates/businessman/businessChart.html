@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商家中心</title>
+    <script th:src="@{/js/vue.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.4.1/chart.min.js"></script>
+    <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+    <style>
+        #app {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .el-header, .el-footer {
+            background-color: #545c64;
+            color: white;
+        }
+
+        .el-main {
+            background-color: #E9EEF3;
+            color: #333;
+            text-align: center;
+        }
+
+        .el-aside {
+            background-color: #545c64;
+            color: #333;
+            text-align: center;
+            height: 86vh;
+        }
+
+        .el-loading-parent--relative {
+            position: unset !important;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-menu
+                    text-color="#fff"
+                    active-text-color="white"
+                    background-color="#545c64"
+                    default-active="1"
+                    mode="horizontal"
+                    @select="handleSelect">
+                <el-row>
+                    <el-col :span="21">
+                        <span index="1" style="font-size: x-large; line-height: 60px;">商家管理中心</span>
+                    </el-col>
+                    <el-col :span="3">
+                        <el-submenu index="2">
+                            <template slot="title">欢迎：{{username}}</template>
+                            <el-menu-item index="2-1">个人信息</el-menu-item>
+                            <el-menu-item index="2-2">帮助</el-menu-item>
+                            <el-menu-item index="2-3">退出登录</el-menu-item>
+                        </el-submenu>
+                    </el-col>
+                </el-row>
+            </el-menu>
+        </el-header>
+        <el-container>
+            <el-aside width="200px">
+                <el-menu
+                        default-active="3"
+                        class="el-menu-vertical-demo"
+                        @select="handleSelect"
+                        background-color="#545c64"
+                        text-color="#fff"
+                        active-text-color="#ffd04b">
+                    <el-menu-item index="1">
+                        <i class="el-icon-menu"></i>
+                        <span slot="title">商品管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="2">
+                        <i class="el-icon-document"></i>
+                        <span slot="title">订单管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="3">
+                        <i class="el-icon-setting"></i>
+                        <span slot="title">数据统计</span>
+                    </el-menu-item>
+                </el-menu>
+            </el-aside>
+            <el-main>
+                <el-row :gutter="50">
+                    <el-col :span="12"><canvas id="myChart"></canvas></el-col>
+                </el-row>
+                <el-row :gutter="50" style="margin-top: 50px;">
+                    <el-col :span="7"><canvas id="myDoughnutChart"></canvas></el-col>
+                </el-row>
+            </el-main>
+        </el-container>
+        <el-footer style="line-height: 60px; font-size: 12px; color: white; text-align: center;">
+            2021©️ 网上购物系统
+        </el-footer>
+    </el-container>
+</div>
+
+</body>
+<script>
+    var cdata = [];
+    var clables = [];
+    var ddata = [];
+    var dlables = [];
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            username: "admin",
+        },
+        methods: {
+            handleSelect(key, keyPath) {
+                console.log(key);
+                if (key == "2-3") {
+                    $.ajax({
+                        url: '/quit',
+                        type: 'POST',
+                        dataType: 'text',
+                        success: function (result) {
+                            if (result == "success") {
+                                app.username = "";
+                                window.location.reload();
+                            }
+                        }
+                    })
+                }if (key == 3){
+                    window.location.replace("/businessChart");
+                }if (key == 1){
+                    window.location.replace("/businessCenter");
+                }if (key == 2) {
+                    window.location.replace("/businessOrderManagement");
+                }
+            },
+            getIndentData() {
+                var _this = this;
+                $.ajax({
+                    type: "POST",
+                    url: "/getIndentData",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+
+                        var number = [];
+                        number = data.number;
+                        for (var i = 0; i < number.length; i++){
+                            cdata.push(number[i]);
+                        }
+                        var time = [];
+                        time = data.time;
+                        for (var i = 0; i < time.length; i++){
+                            clables.push(time[i]);
+                        }
+                        myChart.update();
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "/getCategoryIndent",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        var number = [];
+                        number = data.number;
+                        for (var i = 0; i < number.length; i++){
+                            ddata.push(number[i]);
+                        }
+                        var name = [];
+                        name = data.name;
+                        for (var i = 0; i < name.length; i++){
+                            dlables.push(name[i]);
+                        }
+                        myDoughnutChart.update();
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            },
+            loadingStart(isShow) {
+                const loading = this.$loading({
+                    lock: true,
+                    text: 'Loading',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(255, 255, 255, 0.7)'
+                });
+                if (isShow === 2) {
+                    loading.close();
+                }
+            },
+            updateIndentData() {
+                this.getIndentData();
+            },
+            iStatus() {
+                var _this = this;
+                $.ajax({
+                    url: '/iStatus',
+                    type: 'POST',
+                    dataType: 'text',
+                    success: function (result) {
+                        console.log(result)
+                        if (result != "") {
+                            var parse = JSON.parse(result);
+                            _this.username = parse.userName;
+                            if (parse.uLevel != "3") {
+                                window.location.replace("/login");
+                            }
+                            _this.updateIndentData();
+                        } else {
+                            window.location.replace("/login");
+                        }
+                    }
+                })
+            }
+        },
+        mounted() {
+            this.iStatus();
+        }
+    });
+
+    var ctx = document.getElementById("myChart");
+    ctx.height = 100;
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: clables,
+            datasets: [{
+                label: '销量',
+                data: cdata,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    }
+                }]
+            },
+            title: {
+                display: true,
+                text: "Custom Chart Title"
+            },
+        }
+    });
+
+    // 环形图
+    var ctxDoughnut = document.getElementById("myDoughnutChart");
+    ctx.height = 10;
+    ctx.width = 10;
+    var myDoughnutChart = new Chart(ctxDoughnut, {
+        type: "doughnut",
+        data: {
+            labels: dlables,
+            datasets: [{
+                label: '销量',
+                data: ddata,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    }
+                }]
+            },
+            title: {
+                display: true,
+                text: "Custom Chart Title"
+            },
+        }
+    });
+</script>
+</html>

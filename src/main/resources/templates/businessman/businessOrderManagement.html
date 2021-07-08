@@ -67,7 +67,7 @@
         <el-container>
             <el-aside width="200px">
                 <el-menu
-                        default-active="1"
+                        default-active="2"
                         class="el-menu-vertical-demo"
                         @select="handleSelect"
                         background-color="#545c64"
@@ -89,58 +89,50 @@
             </el-aside>
             <el-main>
                 <el-row>
-                    <el-col :span="1">
-                        <el-button icon="el-icon-plus" @click="handAddGood">添加商品</el-button>
-                    </el-col>
-                    <el-col :span="6" :push="17">
+                    <el-col :span="6" :push="18">
                         <div style="margin-bottom: 10px;">
                             <el-input placeholder="请输入内容" v-model="searchIn">
-                                <el-button slot="append" icon="el-icon-search" @click="searchGood">搜索</el-button>
+                                <el-button slot="append" icon="el-icon-search" @click="searchIndent">搜索</el-button>
                             </el-input>
                         </div>
                     </el-col>
                 </el-row>
                 <template>
                     <el-table
-                            :data="goodsData"
+                            :data="indentData"
                             border
                             style="width: 100%">
                         <el-table-column
                                 fixed
                                 prop="gName"
-                                label="商品名称"
+                                label="订单名称"
                                 width="300">
                         </el-table-column>
                         <el-table-column
                                 prop="cName"
-                                label="商品类别">
+                                label="订单类别">
                         </el-table-column>
                         <el-table-column
-                                prop="gImage"
-                                label="商品图片">
+                                prop="iAddress"
+                                label="订单地址">
                         </el-table-column>
                         <el-table-column
-                                prop="gParameter"
-                                label="商品参数">
+                                prop="iMessage"
+                                label="客户留言">
                         </el-table-column>
                         <el-table-column
-                                prop="gPrice"
-                                label="商品价格">
+                                prop="iPrice"
+                                label="订单价格">
                         </el-table-column>
                         <el-table-column
-                                prop="gNumber"
-                                label="商品销量">
+                                prop="iState"
+                                label="订单状态">
                         </el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
                                 <el-button
                                         size="mini"
                                         @click="handleEdit(scope.$index, scope.row)">编辑
-                                </el-button>
-                                <el-button
-                                        size="mini"
-                                        type="danger"
-                                        @click="handleDelete(scope.$index, scope.row)">删除
                                 </el-button>
                             </template>
                         </el-table-column>
@@ -182,17 +174,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="商品图片" :label-width="formLabelWidth">
-<!--                <el-input v-model="form.gImage" autocomplete="off" style="width: 80%;"></el-input>-->
-                <el-upload
-                        class="upload-demo"
-                        :action="uploadUrl"
-                        :on-preview="handlePreview"
-                        :on-remove="handleRemove"
-                        :file-list="fileList"
-                        list-type="picture">
-                    <el-button size="small" type="primary">点击上传</el-button>
-                    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过5MB</div>
-                </el-upload>
+                <el-input v-model="form.gImage" autocomplete="off" style="width: 80%;"></el-input>
             </el-form-item>
             <el-form-item label="商品参数" :label-width="formLabelWidth">
                 <el-input v-model="form.gParameter" autocomplete="off" style="width: 80%;"></el-input>
@@ -215,7 +197,7 @@
         el: "#app",
         data: {
             username: "admin",
-            goodsData: "",
+            indentData: "",
             form: {
                 "gCatId": "",
                 "gId": "",
@@ -225,17 +207,6 @@
                 "gParameter": "",
                 "gPrice": "",
                 "gStoreId": "",
-                "cName": "",
-            },
-            addForm: {
-                "gCatId": 1,
-                "gId": "",
-                "gImage": "",
-                "gName": "",
-                "gNumber": 0,
-                "gParameter": "",
-                "gPrice": "",
-                "gStoreId": 123,
                 "cName": "",
             },
             value: "",
@@ -286,21 +257,21 @@
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
                 this.pageSize = val;
-                this.getGoodsData();
+                this.getIndentData();
             },
             handleCurrentChange(val) {
                 console.log(`当前页: ${val}`);
                 this.currentPage = val;
-                this.getGoodsData();
+                this.getIndentData();
             },
-            searchGood() {
+            searchIndent() {
                 var _this = this;
                 if (this.searchIn == ""){
-                    this.updateGoodsData();
+                    this.updateIndentData();
                 }else {
                     $.ajax({
                         type: "POST",
-                        url: "/searchGoods",
+                        url: "/searchIndent",
                         dataType: "json",
                         data: {
                             "searchIn": this.searchIn,
@@ -320,59 +291,14 @@
             change(val){
                 this.form.cId = val;
             },
-            handleDelete(index, row) {
-                this.$confirm('此操作将永久删除物品:' + row.gName + ', 是否继续?', '删除提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    var _this = this;
-                    var gId = row.gId;
-                    this.loadingStart(1);
-                    $.ajax({
-                        type: "POST",
-                        url: "/deleteGoodsData",
-                        //dataType: "json",
-                        data: {"gId": gId},
-                        success: function (data) {
-                            _this.loadingStart(2);
-                            console.log(data);
-                            if (data != 0) {
-                                _this.updateGoodsData();
-                                _this.$message({
-                                    type: 'success',
-                                    message: '删除成功!'
-                                });
-                            } else {
-                                _this.$message({
-                                    showClose: true,
-                                    message: '错了哦，这是一条错误消息',
-                                    type: 'error'
-                                });
-                            }
-
-                        },
-                        error: function (err) {
-                            console.log(err);
-                            _this.loadingStart(2);
-                        }
-
-                    });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-                });
-            },
-            getGoodsData() {
+            getIndentData() {
                 var _this = this;
                 var dataPage = _this.currentPage;
                 var dataSize = _this.pageSize;
                 console.log(dataPage);
                 $.ajax({
                     type: "POST",
-                    url: "/getGoodsData",
+                    url: "/getIndentDatas",
                     dataType: "json",
                     data: {
                         "dataPage": dataPage,
@@ -380,18 +306,18 @@
                     },
                     success: function (data) {
                         console.log(data);
-                        _this.goodsData = data;
+                        _this.indentData = data;
                     },
                     error: function (data, type, error) {
                         console.log(data);
                     }
                 });
             },
-            getGoodsDataSize() {
+            getIndentDataSize() {
                 var _this = this
                 $.ajax({
                     type: "POST",
-                    url: "/getGoodsDataSize",
+                    url: "/getIndentDataSize",
                     success: function (data) {
                         _this.total = data;
                     },
@@ -419,122 +345,9 @@
                     loading.close();
                 }
             },
-            updateGoodData() {
-                this.$confirm('此操作将修改物品信息, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.loadingStart(1);
-                    var _this = this;
-                    $.ajax({
-                        type: "POST",
-                        url: "/updateGoodsData",
-                        //dataType: "json",
-                        data: {
-                            "goods" : JSON.stringify(this.form)
-                        },
-                        success: function (data) {
-                            _this.loadingStart(2);
-                            console.log(data);
-                            if (data !== 0) {
-                                _this.updateGoodsData();
-                                _this.$message({
-                                    type: 'success',
-                                    message: '修改成功!'
-                                });
-                            } else {
-                                _this.$message({
-                                    showClose: true,
-                                    message: '修改失败，请重试！',
-                                    type: 'error'
-                                });
-                            }
-                            _this.dialogFormVisible = false;
-                        },
-                        error: function (err) {
-                            console.log(err);
-                            _this.dialogFormVisible = false;
-                            _this.loadingStart(2);
-                        }
-                    })
-                }).catch(() => {
-
-                });
-            },
-            handAddGood() {
-                this.form = this.addForm;
-                this.dialogTitle = "新增信息";
-                this.dialogFormVisible = true;
-                this.getCategoryData();
-            },
-            addGoodData() {
-                this.$confirm('此操作将添加新物品信息, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.loadingStart(1);
-                    var _this = this;
-                    console.log(this.form);
-                    $.ajax({
-                        type: "POST",
-                        url: "/addGoodsData",
-                        data: {
-                            "goods": JSON.stringify(_this.form),
-                        },
-                        success: function (data) {
-                            _this.loadingStart(2);
-                            console.log(data);
-                            if (data !== 0) {
-                                _this.updateGoodsData();
-                                _this.$message({
-                                    type: 'success',
-                                    message: '添加成功!'
-                                });
-                            } else {
-                                _this.$message({
-                                    showClose: true,
-                                    message: '添加失败，请重试！',
-                                    type: 'error'
-                                });
-                            }
-                            _this.dialogFormVisible = false;
-                        },
-                        error: function (err) {
-                            console.log(err);
-                            _this.dialogFormVisible = false;
-                            _this.loadingStart(2);
-                        }
-                    })
-                }).catch(() => {
-
-                });
-            },
-            updateGoodsData() {
-                this.getGoodsDataSize();
-                this.getGoodsData();
-            },
-            getCategoryData() {
-                var _this = this;
-                $.ajax({
-                    type: "POST",
-                    url: "/getCategoryData",
-                    dataType: "json",
-                    success: function (data) {
-                        console.log(data);
-                        _this.options = data;
-                    },
-                    error: function (err) {
-                        console.log(err);
-                    }
-                })
-            },
-            handleRemove(file, fileList) {
-                console.log(file, fileList);
-            },
-            handlePreview(file) {
-                console.log(file);
+            updateIndentData() {
+                this.getIndentDataSize();
+                this.getIndentData();
             },
             iStatus(){
                 var _this = this;
@@ -550,7 +363,7 @@
                             if (parse.uLevel != "3"){
                                 window.location.replace("/login");
                             }
-                            _this.updateGoodsData();
+                            _this.updateIndentData();
                         }else {
                             window.location.replace("/login");
                         }

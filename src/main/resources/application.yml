@@ -18,6 +18,10 @@ spring:
     host: smtp.qq.com
     password: sptxerzynbwogigg
     username: liwuxin54@qq.com
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
 
 
 
