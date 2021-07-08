@@ -71,8 +71,22 @@ public interface GoodsMapper {
      * @param gStoreId 用户商家的id
      * @return 商品数组
      */
-    @Select("select * from Goods where gStoreId = #{gStoreId} and gName like #{searchIn} " +
-            "or gParameter like #{searchIn}")
+    @Select("select * from Goods g, category c where gStoreId = #{gStoreId} and (gName like #{searchIn}" +
+            "or gParameter like #{searchIn}) and g.gCatId = c.cId")
     public ArrayList<Map<String, Object>> findAllGoodsBySearchIn(@Param("searchIn") String searchIn,
                                                                  @Param("gStoreId") String gStoreId);
+
+    /**
+     * 更新商品图片
+     * @param gStoreId 商家id
+     * @param gImage 图片名称
+     * @return 影响条目数
+     */
+    @Update("update Goods set gImage = #{gImage} where gStoreId = #{gStoreId} and gId = #{gId}")
+    public int updateGoodImage(@Param("gStoreId") String gStoreId,
+                               @Param("gId") String gId,
+                               @Param("gImage") String gImage);
+
+    @Select("select sId from store where sUserId = #{sUserId}")
+    public String useuIdGetgStoreId(@Param("sUserId") String sUserId);
 }
