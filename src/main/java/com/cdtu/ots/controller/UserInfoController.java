@@ -1,6 +1,9 @@
 package com.cdtu.ots.Controller;
 
+import com.alibaba.fastjson.JSON;
+import com.cdtu.ots.entity.Address;
 import com.cdtu.ots.entity.User;
+import com.cdtu.ots.service.AddressService;
 import com.cdtu.ots.service.UserService;
 import com.cdtu.ots.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +15,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 @Controller
 public class UserInfoController {
    @Autowired
    private UserService userService;
+
+   @Autowired
+   private AddressService addressService;
 
     @RequestMapping("/userInfo")
     public String userInfo(){
@@ -81,5 +89,105 @@ public class UserInfoController {
         return "/user/AddressInfo";
     }
 
+    @RequestMapping("/findAddress")
+    @ResponseBody
+    public String findAddress(HttpServletRequest request){
+        String message = "";
+
+        User user =(User) request.getSession().getAttribute("user");
+
+        ArrayList<Map<String, Object>> all = addressService.findAll(user.getuId());
+        String s = JSON.toJSONString(all);
+
+        return s;
+    }
+
+    @PostMapping("/insertAddress")
+    @ResponseBody
+    public String insertAddress(int coutAdd,String name, String address, String phone, String aPostcode,boolean isDefault, HttpServletRequest request){
+        String message = "";
+        User user = (User)request.getSession().getAttribute("user");
+
+        if (isDefault){
+            Address aDefault = addressService.findDefault(isDefault,user.getuId());
+           if (aDefault!=null){
+               aDefault.setDefault(false);
+               addressService.updateDefault(aDefault.getaId(),aDefault.getDefault());
+           }
+        }
+        System.out.println(coutAdd);
+        if(coutAdd<=4){
+            Address address1 = new Address();
+            address1.setaAddress(address);
+            address1.setaConsignee(name);
+            address1.setaPhone(phone);
+            address1.setDefault(isDefault);
+            address1.setaPostcode(aPostcode);
+            address1.setaUserid(user.getuId());
+            addressService.insertAddress(address1);
+            message = "success";
+        }else{
+            message = "error";
+        }
+
+        return message;
+    }
+
+    @PostMapping("/editAddress")
+    @ResponseBody
+    public String editAddress(int aId,String name, String address, String phone, String aPostcode,boolean isDefault, HttpServletRequest request){
+        String message = "";
+
+        User user = (User)request.getSession().getAttribute("user");
+
+        if (isDefault){
+            Address aDefault = addressService.findDefault(isDefault,user.getuId());
+            if (aDefault!=null){
+                aDefault.setDefault(false);
+                addressService.updateDefault(aDefault.getaId(),aDefault.getDefault());
+            }
+        }
+        Address address1 = new Address();
+        address1.setaId(aId);
+        address1.setaAddress(address);
+        address1.setaConsignee(name);
+        address1.setaPhone(phone);
+        address1.setDefault(isDefault);
+        address1.setaPostcode(aPostcode);
+        address1.setaUserid(user.getuId());
+        addressService.updateAddress(address1);
+        message = "success";
+        return message;
+    }
+
+    @PostMapping("/deleteAddress")
+    @ResponseBody
+    public String deleteAddress(HttpServletRequest request, int aId){
+        String message = "";
+
+        System.out.println(aId);
+        Boolean aBoolean = addressService.deleteAddress(aId);
+        if (aBoolean){
+            message = "success";
+        }
+        return message;
+    }
+
+    @RequestMapping("/storeIn")
+    public  String storeIn(){
+        return "/user/storeIn";
+    }
+
+    @PostMapping("/userApp")
+    @ResponseBody
+    public String userApp(String username){
+        String message = "";
+        Boolean aBoolean = userService.updateLevel(username, "2");
+
+        if (aBoolean){
+            message = "success";
+        }
+        return message;
+    }
 
 }

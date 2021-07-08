@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>账号管理</title>
+    <title>商家入驻</title>
     <script th:src="@{/js/vue.min.js}"></script>
     <link rel="stylesheet" th:href="@{/css/index.css}">
     <script th:src="@{/js/index.js}"></script>
     <script th:src="@{/js/jquery.min.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/user/userInfo.css}">
+    <link rel="stylesheet" th:href="@{/css/user/addressInfo.css}">
 </head>
 <body>
 <div id="app">
@@ -67,108 +67,91 @@
             </el-aside>
             <el-main>
                 <el-card class="box-card" style="width: 800px;height: 1000px;">
-                    <div>
-                        <div>
-                            <el-avatar :size="200"></el-avatar>
-                        </div>
-                    </div>
-                    <el-divider></el-divider>
-                    <div style="margin-bottom: 20px">
-                        <el-row >
-                            <el-col :span="1">
+                    <h1>Hi,{{username}},欢迎在本网站免费开店！</h1>
+                    <el-form id="notApp" ref="form" :model="form" label-width="80px" style="margin-left: 50px" hidden>
 
-                            </el-col>
-                            <el-col :span="4">
-                                <div>您的基础信息：</div>
-                            </el-col>
+                        <el-form-item label="开店类型:" style="margin-right: 470px">
+                                个人店铺（免费开店）
+                        </el-form-item>
+                        <el-form-item label="掌柜名：:" style="margin-right: 550px">
+                            {{username}}
+                        </el-form-item>
+                        <el-form-item style="margin-right: 200px">
+                            <el-button type="primary" @click="submitForm">立即申请</el-button>
+                        </el-form-item>
+                    </el-form>
 
-                        </el-row>
-                        <el-row>
-                            <el-col :span="2">
-
-                            </el-col>
-                            <el-col :span="4">
-                                <div>会员名：</div>
-                            </el-col>
-                            <el-col :span="6">
-                                <div>{{username}}</div>
-                            </el-col>
-                            <el-col :span="4">
-
-                            </el-col>
-                            <el-col :span="8">
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col :span="2">
-
-                            </el-col>
-                            <el-col :span="4">
-                                <div>绑定邮箱</div>
-                            </el-col>
-                            <el-col :span="6">
-                                {{email}}
-                            </el-col>
-                            <el-col :span="4">
-                                <el-link type="primary" @click="EditEmail">修改绑定邮箱</el-link>
-                            </el-col>
-                            <el-col :span="8">
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col :span="2">
-
-                            </el-col>
-                            <el-col :span="4">
-                                <div>绑定手机</div>
-                            </el-col>
-                            <el-col :span="6">
-                                {{phone}}
-                            </el-col>
-                            <el-col :span="4">
-                                <el-link type="primary">修改绑定手机号</el-link>
-                            </el-col>
-                            <el-col :span="8">
-                            </el-col>
-                        </el-row>
-                    </div>
-                    <el-divider></el-divider>
+                    <template  >
+                        <el-table
+                                :data="tableData"
+                                stripe
+                                style="width: 100%" hidden id="apply" >
+                            <el-table-column
+                                    prop="shopkeeper"
+                                    label="掌柜名"
+                                    width="180">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="storeSt"
+                                    label="开店类型"
+                                    width="180">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="Review"
+                                    label="审核状态"
+                                    width="180">
+                            </el-table-column>
+                        </el-table>
+                    </template>
                 </el-card>
             </el-main>
-        </el-container>.
+        </el-container>
     </el-container>
+</div>
 
-    <script>
-        window.onload = function (){
-            $.ajax({
-                url:'/iStatus',
-                type: 'POST',
-                dataType : 'text',
-                success : function (result){
-                    console.log(result)
-                    if (result!=""){
-                        var parse = JSON.parse(result);
-                        ve.username = parse.userName;
-                        ve.email = parse.uEmail;
-                        ve.phone = parse.uPhone;
+<script>
+    window.onload = function (){
+        $.ajax({
+            url:'/iStatus',
+            type: 'POST',
+            dataType : 'text',
+            success : function (result){
 
-
-                    }else {
-                        window.location.replace("/home");
+                if (result!=""){
+                    var parse = JSON.parse(result);
+                    ve.username = parse.userName;
+                    ve.tableData.shopkeeper = parse.userName;
+                    console.log(parse.uLevel);
+                    if (parse.uLevel=="1"){
+                        $("#notApp").show();
+                        $("#apply").hide();
                     }
+                    if (parse.uLevel=="2"){
+                        $("#notApp").hide();
+                        $("#apply").show();
+                    }
+
+
+                }else {
+                    window.location.replace("/home");
                 }
-            })
-        }
+            }
+        });
 
         var ve = new Vue({
-            el:'#app',
-            data:{
-                username : '',
-                email : '',
-                phone : '',
-                imageUrl: ''
-            },
-            methods: {
+            el: '#app',
+
+            data: {
+                username :'',
+                form :{
+
+                },
+                tableData : [{
+                    shopkeeper : "",
+                    storeSt : "个人店铺",
+                    Review : "未通过"
+                }]
+            },methods: {
                 handleSelect(key, keyPath) {
                     console.log(key, keyPath);
                 },handleOpen(key, keyPath) {
@@ -177,8 +160,7 @@
                 handleClose(key, keyPath) {
                     console.log(key, keyPath);
                 }
-                ,
-                quit(){
+                ,quit(){
                     $.ajax({
                         url: '/quit',
                         type: 'POST',
@@ -191,13 +173,26 @@
                         }
                     })
                 },
-                EditEmail(){
-                    window.location.assign("/editEmail")
+                submitForm(){
+                    $.ajax({
+                        url:"/userApp",
+                        type: 'POST',
+                        dataType: 'text',
+                        data: {
+                            "username": this.username
+                        },
+                        success: function (result) {
+                            if (result=="success"){
+                                window.location.reload();
+                            }
+                        }
+                    })
                 },
-
             }
+
         })
-    </script>
-</div>
+
+        }
+</script>
 </body>
 </html>

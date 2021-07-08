@@ -38,4 +38,8 @@ public class UserService {
         Boolean aBoolean = userMapper.updatePsw(username, password);
         return aBoolean;
     }
+    public Boolean updateLevel(String username,String uLevel){
+        Boolean aBoolean = userMapper.updateLevel(username, uLevel);
+        return  aBoolean;
+    }
 }

@@ -17,6 +17,8 @@ public interface UserMapper {
     @Select("SELECT * from user where uLevel = #{uLevel}")
     public User findByLevel(String uLevel);
 
+
+
     @Insert("insert into user(userName,password,uPhone,uEmail) values(#{userName},#{password},#{uPhone},#{uEmail})")
     public Boolean insertUser(User user);
 
@@ -25,5 +27,8 @@ public interface UserMapper {
 
     @Update("update user set password=#{password} where userName = #{username}")
     public Boolean updatePsw(String username, String password);
+
+    @Update("update user set uLevel=#{uLevel} where userName = #{username}")
+    public Boolean updateLevel(String username,String uLevel);
 
 }
