@@ -88,7 +88,7 @@
                     </div>
                     <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
                             <el-menu-item index="1"><el-link :underline="false" th:href="@{/login}"  style="color: #FFFFFF">
-                                你好，请登录！
+                                你好，请登录
                             </el-link></el-menu-item>
                         </el-col>
                     <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
@@ -111,10 +111,22 @@
             </el-menu>
 
         </el-header>
-        <el-container>
-            <el-aside width="200px">Aside</el-aside>
+        <el-container style="margin-left: 200px">
+            <el-aside width="250px">
+                <el-card class="box-card">
+                    <el-breadcrumb separator="/" v-for="(row,i) in listTemp" >
+                        <el-breadcrumb-item v-for="(cell,j) in row">
+                            <el-link :underline="false"  target="_blank" style="margin: 5px;margin-top: 20px">
+                                {{cell.cName}}
+                            </el-link>
+                        </el-breadcrumb-item>
+                    </el-breadcrumb>
+
+                </el-card>
+
+            </el-aside>
             <el-container>
-                <el-main>
+                <el-main >
 <!--                    轮播-->
                     <el-row :gutter="10"   >
                         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
@@ -139,12 +151,66 @@
 <!--                                    加载中<span class="dot">...</span>-->
 <!--                                </div>-->
 <!--                            </el-image>-->
-                           <div >
+                           <div style="text-align: center">
                                 <i class="el-icon-present"></i>为你推荐<i class="el-icon-present"></i>
                             </div>
 
                         </div>
                     </el-row>
+                    <div >
+                        <el-row :gutter="8" style = "padding: 0" v-for="storeList in storeTmp" >
+
+                            <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" v-for="store in storeList">
+                                <el-card shadow="hover" >
+                                    <el-row :gutter="10">
+                                        <el-image :src="src">
+                                            <div slot="placeholder" class="image-slot">
+                                                加载中<span class="dot">...</span>
+                                            </div>
+                                        </el-image>
+                                    </el-row>
+                                    <el-row :gutter="10">
+
+
+                                        <el-col :span="12">
+                                            <div style="float:left">
+                                            ￥{{store.gPrice}}
+                                        </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                            <div style="text-align: center">
+                                            {{store.gNumber}}人付款
+                                        </div>
+                                        </el-col>
+
+                                    </el-row>
+                                    <el-row :gutter="10">
+                                        <el-link @click="test(store.gId)" target="_blank">{{store.gName}}</el-link>
+
+                                    </el-row>
+
+
+                                </el-card>
+
+                            </el-col>
+
+                        </el-row>
+                    </div>
+                    <template>
+                    <div class="block" style="margin-top: 20px">
+
+                        <el-pagination
+                                @size-change="handleSizeChange"
+                                @current-change="handleCurrentChange"
+                                :current-page="currentPage4"
+                                :page-sizes="[4, 8, 12, 16]"
+                                :page-size="100"
+                                layout="total, sizes, prev, pager, next, jumper"
+                                :total="sNumber">
+                        </el-pagination>
+                    </div>
+                    </template>
+
 
 
 
@@ -160,74 +226,8 @@
 
 
 
-<script>
-    window.onload = function (){
-        $.ajax({
-            url:'/iStatus',
-            type: 'POST',
-            dataType : 'text',
-            success : function (result){
-                console.log(result)
-                if (result!=""){
-                    var parse = JSON.parse(result);
-                    vm.username = parse.userName;
-                    $('.userStatus1').show();
-                    $('.userStatus2').hide();
-                    if (parse.uLevel!="3"){
-                        vm.vip = "普通会员";
-                    }
-                }
-            }
-        })
-    }
+<script th:src="@{/js/common/home.js}">
 
-    var vm = new Vue({
-        el : '#test03',
-        data : function () {
-            return {
-                activeIndex: '1',
-                activeIndex2: '1',
-                input3: '',
-                select: '',
-                username : '',
-                vip:'',
-                integral:'0',
-                imgList: [
-                    {
-                        src: '/image/common/1.jpg'
-                    },
-                    {
-                        src: '/image/common/2.jpg'
-                    },
-                    {
-                        src: '/image/common/3.jpg'
-                    }
-                ],
-                // 图片父容器高度
-                bannerHeight: 800,
-                // 浏览器宽度
-                screenWidth: 0
-            };
-        },
-        methods: {
-            handleSelect(key, keyPath) {
-                console.log(key, keyPath);
-            },
-            quit(){
-                $.ajax({
-                    url: '/quit',
-                    type: 'POST',
-                    dataType: 'text',
-                    success: function (result) {
-                        if (result=="success"){
-                            vm.username = "";
-                            window.location.reload();
-                        }
-                    }
-                })
-            }
-        }
-    })
 
 </script>
 

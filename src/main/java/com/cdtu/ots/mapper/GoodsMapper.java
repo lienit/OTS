@@ -27,6 +27,11 @@ public interface GoodsMapper {
     public ArrayList<Map<String, Object>> findAllByStoreIdAndSize(@Param("gStoreId") String gStoreId, @Param("page") int page,
                                                                   @Param("size") int size);
 
+    @Select("select * from Goods limit #{page},#{size}")
+    public ArrayList<Map<String, Object>> findAll(int  page, int size);
+
+    @Select("select * from goods where gId=#{gId}")
+    public Goods findByGId(int gId);
     /**
      * 查询商家共多少件商品
      * @param gStoreId 商家id
@@ -34,6 +39,9 @@ public interface GoodsMapper {
      */
     @Select("select count(gId) from Goods where gStoreId = #{gStoreId}")
     public int findSizeByStoreId(@Param("gStoreId") String gStoreId);
+
+    @Select("select count(gId) from Goods ")
+    public int findSize();
 
     /**
      * 删除商品信息

@@ -1,4 +1,4 @@
-package com.cdtu.ots.controller;
+package com.cdtu.ots.Controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

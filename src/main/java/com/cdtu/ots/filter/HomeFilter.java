@@ -39,7 +39,7 @@ public class HomeFilter implements Filter {
             // 放行
             filterChain.doFilter(servletRequest,servletResponse);
         }else {
-            System.out.println("嘿嘿");
+//            System.out.println("嘿嘿");
             filterChain.doFilter(servletRequest,servletResponse);
         }
 

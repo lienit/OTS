@@ -83,9 +83,9 @@
 
                     <template  >
                         <el-table
-                                :data="tableData"
                                 stripe
-                                style="width: 100%" hidden id="apply" >
+                                :data="tableData"
+                                style="width: 100%"id="apply"  hidden>
                             <el-table-column
                                     prop="shopkeeper"
                                     label="掌柜名"
@@ -100,6 +100,7 @@
                                     prop="Review"
                                     label="审核状态"
                                     width="180">
+
                             </el-table-column>
                         </el-table>
                     </template>
@@ -120,8 +121,11 @@
                 if (result!=""){
                     var parse = JSON.parse(result);
                     ve.username = parse.userName;
-                    ve.tableData.shopkeeper = parse.userName;
-                    console.log(parse.uLevel);
+
+                    ve.tableData.shopkeeper = ve.username;
+                    ve.tableData.storeSt = "个人店铺";
+                    ve.tableData.Review = "未通过";
+                    console.log(ve.tableData);
                     if (parse.uLevel=="1"){
                         $("#notApp").show();
                         $("#apply").hide();
@@ -148,8 +152,8 @@
                 },
                 tableData : [{
                     shopkeeper : "",
-                    storeSt : "个人店铺",
-                    Review : "未通过"
+                    storeSt : "",
+                    Review : ""
                 }]
             },methods: {
                 handleSelect(key, keyPath) {
