@@ -33,8 +33,9 @@
             text-align: center;
             height: 86vh;
         }
+
         .el-loading-parent--relative {
-            position: unset!important;
+            position: unset !important;
         }
     </style>
 </head>
@@ -181,12 +182,12 @@
                 <el-input v-model="form.iPrice" autocomplete="off" style="width: 80%;"></el-input>
             </el-form-item>
             <el-form-item disabled label="订单状态" :label-width="formLabelWidth">
-                <div>
+                <el-radio-group v-model="radio1" @change="change">
                     <el-radio v-model="radio1" label="0">未付款</el-radio>
                     <el-radio v-model="radio1" label="1">已付款</el-radio>
                     <el-radio v-model="radio1" label="2">已发货</el-radio>
                     <el-radio v-model="radio1" label="3">关闭订单</el-radio>
-                </div>
+                </el-radio-group>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -218,23 +219,26 @@
         methods: {
             handleSelect(key, keyPath) {
                 console.log(key);
-                if (key == "2-3"){
+                if (key == "2-3") {
                     $.ajax({
                         url: '/quit',
                         type: 'POST',
                         dataType: 'text',
                         success: function (result) {
-                            if (result=="success"){
+                            if (result == "success") {
                                 app.username = "";
                                 window.location.reload();
                             }
                         }
                     })
-                }if (key == 3){
+                }
+                if (key == 3) {
                     window.location.replace("/businessChart");
-                }if (key == 1){
+                }
+                if (key == 1) {
                     window.location.replace("/businessCenter");
-                }if (key == 2) {
+                }
+                if (key == 2) {
                     window.location.replace("/businessOrderManagement");
                 }
             },
@@ -255,11 +259,14 @@
                 this.currentPage = val;
                 this.getIndentData();
             },
+            change(val){
+                this.form.iState = val;
+            },
             searchIndent() {
                 var _this = this;
-                if (this.searchIn == ""){
+                if (this.searchIn == "") {
                     this.updateIndentData();
-                }else {
+                } else {
                     $.ajax({
                         type: "POST",
                         url: "/searchIndent",
@@ -315,6 +322,48 @@
                 });
             },
             dialogOk() {
+                console.log(this.form);
+                this.$confirm('此操作将修改订单信息, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.loadingStart(1);
+                    var _this = this;
+                    $.ajax({
+                        type: "POST",
+                        url: "/updateIndentData",
+                        //dataType: "json",
+                        data: {
+                            "indent" : JSON.stringify(this.form)
+                        },
+                        success: function (data) {
+                            _this.loadingStart(2);
+                            console.log(data);
+                            if (data !== 0) {
+                                _this.updateIndentData();
+                                _this.$message({
+                                    type: 'success',
+                                    message: '修改成功!'
+                                });
+                            } else {
+                                _this.$message({
+                                    showClose: true,
+                                    message: '修改失败，请重试！',
+                                    type: 'error'
+                                });
+                            }
+                            _this.dialogFormVisible = false;
+                        },
+                        error: function (err) {
+                            console.log(err);
+                            _this.dialogFormVisible = false;
+                            _this.loadingStart(2);
+                        }
+                    })
+                }).catch(() => {
+
+                });
 
             },
             loadingStart(isShow) {
@@ -332,22 +381,22 @@
                 this.getIndentDataSize();
                 this.getIndentData();
             },
-            iStatus(){
+            iStatus() {
                 var _this = this;
                 $.ajax({
-                    url:'/iStatus',
+                    url: '/iStatus',
                     type: 'POST',
-                    dataType : 'text',
-                    success : function (result){
+                    dataType: 'text',
+                    success: function (result) {
                         console.log(result)
-                        if (result!=""){
+                        if (result != "") {
                             var parse = JSON.parse(result);
                             _this.username = parse.userName;
-                            if (parse.uLevel != "3"){
+                            if (parse.uLevel != "3") {
                                 window.location.replace("/login");
                             }
                             _this.updateIndentData();
-                        }else {
+                        } else {
                             window.location.replace("/login");
                         }
                     }

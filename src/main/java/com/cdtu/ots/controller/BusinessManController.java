@@ -1,4 +1,4 @@
-package com.cdtu.ots.Controller;
+package com.cdtu.ots.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -278,5 +278,22 @@ public class BusinessManController {
     public int getIndentDataSize(HttpServletRequest request) {
         String gStoreId = UseuIdGetgStoreId(request);
         return indentMapper.findSizeByStoreId(gStoreId);
+    }
+
+    @PostMapping("/updateIndentData")
+    @ResponseBody
+    public int updateIndentData(String indent){
+
+        JSONObject indent_Obj = JSONObject.parseObject(indent);
+        int err = 0;
+        try {
+            err = indentMapper.updateIndentDataByGid(indent_Obj.getString("iAddress"),
+                    indent_Obj.getString("iState"), indent_Obj.getDouble("iPrice"),
+                    indent_Obj.getString("sId"), indent_Obj.getString("iId"));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return err;
+
     }
 }
