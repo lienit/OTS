@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script th:src="@{/js/vue.min.js}"></script>
+  <link rel="stylesheet" th:href="@{/css/index.css}">
+  <script th:src="@{/js/index.js}"></script>
+  <script th:src="@{/js/jquery.min.js}"></script>
+  <style>
+    #app {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .el-table .warning-row {
+      background: oldlace;
+    }
+
+    .el-table .success-row {
+      background: #f0f9eb;
+    }
+
+
+    .el-footer {
+      background-color: #a6a9ad;
+      color: white;
+      text-align: center;
+    }
+    .el-main {
+      background-color: #E9EEF3;
+      color: #333;
+
+    }
+    .el-aside {
+      background-color: #545c64;
+      color: #333;
+      text-align: center;
+      height: 100%;
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <el-container style="height: 100%;">
+    <el-aside width="200px" style="background-color:#545c64">
+      <el-menu default-active="1"
+               class="el-menu-vertical-demo"
+               @select="handleSelect"
+               background-color="#545c64"
+               text-color="#fff"
+               active-text-color="#ffd04b">
+        <el-submenu index="1">
+          <template slot="title"><i class="el-icon-message"></i>导航一</template>
+          <el-menu-item-group>
+            <el-menu-item index="1">
+              <i class="el-icon-menu"></i>
+              <span slot="title">用户管理</span>
+            </el-menu-item>
+            <el-menu-item index="2">
+              <i class="el-icon-document"></i>
+              <span slot="title">类别管理</span>
+            </el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+      </el-menu>
+    </el-aside>
+
+    <el-main>
+      <template>
+        <el-button type="primary" @click="categoryadd" plain>添加类别</el-button>
+        <el-table
+                :data="categoryData"
+                border
+                style="width: 100%">
+          <el-table-column
+                  fixed
+                  prop="cId"
+                  label="编号"
+                  width="100">
+          </el-table-column>
+          <el-table-column
+                  prop="cName"
+                  label="名称"
+                  width="100">
+          </el-table-column>
+          <el-table-column
+                  prop="cState"
+                  label="状态"
+                  width="100">
+          </el-table-column>
+          <el-table-column
+                  prop="belong"
+                  label="归属"
+                  width="180">
+          </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button
+                      size="mini"
+                      icon="el-icon-edit" circle
+                      @click="categoryEdit(scope.$index, scope.row)"></el-button>
+              <el-button
+                      size="mini"
+                      type="danger"
+                      icon="el-icon-delete" circle
+                      @click="categoryDelete(scope.$index, scope.row)"></el-button>
+
+            </template>
+          </el-table-column>
+        </el-table>
+
+
+        <el-dialog title="添加类别信息" :visible.sync="dialogFormVisible">
+          <!-- 在el-dialog中进行嵌套el-form实现弹出表格的效果 -->
+          <el-form :model="form">
+            <el-form-item label="编号" :label-width="formLabelWidth">
+              <el-input v-model="form.cId" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" :label-width="formLabelWidth">
+              <el-input v-model="form.cName" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="状态" :label-width="formLabelWidth">
+              <el-input v-model="form.cState" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="归属" :label-width="formLabelWidth">
+              <el-input v-model="form.belong" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="cancel">取 消</el-button>
+            <!-- 设置触发更新的方法 -->
+            <el-button type="primary" @click="addCategory">确 定</el-button>
+          </div>
+        </el-dialog>
+
+
+        <el-dialog title="修改类别信息" :visible.sync="alTerDialogFormVisible">
+          <el-form :model="form">
+            <el-form-item label="编号" :label-width="formLabelWidth">
+              <el-input v-model="form.cId" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" :label-width="formLabelWidth">
+              <el-input v-model="form.cName" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="状态" :label-width="formLabelWidth">
+              <el-input v-model="form.cState" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="归属" :label-width="formLabelWidth">
+              <el-input v-model="form.belong" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="changeCancel">取 消</el-button>
+            <!-- 设置触发更新的方法 -->
+            <el-button type="primary" @click="changeCategory">确 定</el-button>
+          </div>
+        </el-dialog>
+      </template>
+
+    </el-main>
+  </el-container>
+  <el-footer style="line-height: 60px; font-size: 12px; color: white; text-align: center; ">
+    <div class="block" style="margin-top: auto;">
+      <el-pagination
+              background
+              prev-text="上一页"
+              next-text="下一页"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              :page-sizes="[5, 10, 15, 20]"
+              layout=" prev, pager, next, sizes, total"
+              :total="total">
+      </el-pagination>
+    </div>
+  </el-footer>
+  </el-container>
+
+
+
+
+
+
+
+</div>
+
+<script>
+  var Main = new Vue({
+    el: "#app",
+    data : {
+      drawer: false,
+      direction: 'btt',
+      categoryData: "",
+      dialogFormVisible: false,
+      alTerDialogFormVisible: false,
+      formLabelWidth: "80px",
+      form: {
+        cId: "",
+        cName:"",
+        cState:"",
+        Belong:""
+      },
+      addform: {
+        cId: "",
+        cName:"",
+        cState:"",
+        Belong:""
+      },
+      value6: "",
+      currentIndex: "",
+      currentPage: 1,          //当前页数
+      pageSize: 10,            //每页显示条目数
+      total: 0,               //分页总条数
+    },
+    methods: {
+      categoryadd() {
+        this.form = this.addform;
+        this.dialogFormVisible = true;
+      },
+      addCategory() {
+        //添加
+        //   this.form.date = reformat(this.form.date);
+        //    可以在html上面进行设置日期的格式化
+        //   将我们添加的信息提交到总数据里面
+        // this.userData.push(this.form);
+        // this.dialogFormVisible = false;
+        this.$confirm('此操作将添加新物品信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          console.log("error");
+          var _this = this;
+          console.log(this.form);
+          $.ajax({
+            type: "POST",
+            url: "/addCategoryData",
+            data: {
+              "category": JSON.stringify(_this.addform),
+            },
+            success: function (data) {
+              console.log(data);
+              if (data !== 0) {
+                _this.updateCategoryData();
+                _this.$message({
+                  type: 'success',
+                  message: '添加成功!'
+                });
+              } else {
+                _this.$message({
+                  showClose: true,
+                  message: '添加失败，请重试！',
+                  type: 'error'
+                });
+              }
+              _this.dialogFormVisible = false;
+            },
+            error: function (err) {
+              console.log(err);
+              _this.dialogFormVisible = false;
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            message: 'shite',
+            type: 'error'
+          });
+        });
+
+      },
+      cancel() {
+        // 取消的时候直接设置对话框不可见即可
+        this.dialogFormVisible = false;
+        this.$message({
+          type: "info",
+          message: "已取消添加"
+        });
+      },
+      changeCategory() {  //修改
+        var _this = this;
+        this.$confirm('将修改物品信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          var _this = this;
+          $.ajax({
+            type: "POST",
+            url: "/updateCategoryData",
+            data: {
+              "category" : JSON.stringify(this.form)
+            },
+            success: function (data) {
+              console.log(data);
+              if (data !== 0) {
+                _this.updateCategoryData();
+                _this.$message({
+                  type: 'success',
+                  message: '修改成功!'
+                });
+              } else {
+                _this.$message({
+                  showClose: true,
+                  message: '修改失败，请重试！',
+                  type: 'error'
+                });
+              }
+              _this.alTerDialogFormVisible = false;
+            },
+            error: function (err) {
+              console.log(err);
+              _this.alTerDialogFormVisible = false;
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消"
+          });
+        });
+
+      },
+      categoryEdit(index, row) {
+        // 将数据的index传递过来用于实现数据的回显
+        // this.form = JSON.parse(JSON.stringify(row));
+        // this.form = this.userData[index];
+        // this.currentIndex = index;
+        // // 设置对话框的可见
+        // this.alTerDialogFormVisible = true;
+        this.form = JSON.parse(JSON.stringify(row));
+        this.alTerDialogFormVisible = true;
+      },
+      updateCategoryData() {
+        this.getCategoryDataSize();
+        this.getCategory();
+      },
+      changeCancel() {
+        // 取消的时候直接设置对话框不可见即可
+        this.alTerDialogFormVisible = false;
+        this.$message({
+          type: "info",
+          message: "已取消修改"
+        });
+      },
+      categoryDelete(index, row) {
+        // 设置类似于console类型的功能
+        this.$confirm("永久删除该记录, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+                .then(() => {
+                  var cId = row.cId;
+                  var _this = this;
+                  $.ajax({
+                    type: "POST",
+                    url: "/categoryDelete",
+                    data: {"cId": cId},
+                    success: function (data) {
+                      console.log(data);
+                      if (data != 0) {
+                        _this.getCategory();
+                        _this.$message({
+                          type: 'success',
+                          message: '删除成功!'
+                        });
+                      } else {
+                        _this.$message({
+                          showClose: true,
+                          message: 'error!!!',
+                          type: 'error'
+                        });
+                      }
+
+                    },
+                    error: function (err) {
+                      console.log(err);
+                    }
+
+                  });
+                })
+                .catch(() => {
+                  this.$message({
+                    type: "info",
+                    message: "已取消删除"
+                  });
+                });
+      },
+      handleSelect(key, keyPath) {
+        // console.log(key, keyPath);
+        console.log(key);
+        if (key == "2-3"){
+          $.ajax({
+            url: '/quit',
+            type: 'POST',
+            dataType: 'text',
+            success: function (result) {
+              if (result=="success"){
+                app.username = "";
+                window.location.reload();
+              }
+            }
+          })
+        }if (key == 1){
+          window.location.replace("/a");
+        }if (key == 2) {
+          window.location.replace("/category");
+        }
+      },
+      getCategoryDataSize() {
+        var _this = this
+        $.ajax({
+          type: "POST",
+          url: "/getCategoryDataSize",
+          success: function (data) {
+            console.log(data);
+            _this.total = data;
+          },
+          error: function (error) {
+            console.log(error);
+          }
+        });
+      },
+      getCategory() {
+        var _this = this;
+        $.ajax({
+          type: "POST",
+          url: "/getCategory",
+          dataType: "json",
+          success: function (data) {
+            console.log(data);
+            _this.categoryData = data;
+          },
+          error: function (data, type, error) {
+            console.log(data);
+          }
+        });
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.pageSize = val;
+        this.getCategoryPage();
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+        this.currentPage = val;
+        this.getCategoryPage();
+      },
+      getCategoryPage() {
+        var _this = this;
+        var dataPage = this.currentPage;
+        var dataSize = this.pageSize;
+        console.log(dataPage);
+        $.ajax({
+          type: "POST",
+          url: "/getCategoryPage",
+          dataType: "json",
+          data: {
+            "dataPage": dataPage,
+            "pageSize": dataSize,
+          },
+          success: function (data) {
+            console.log(data);
+            _this.categoryData = data;
+          },
+          error: function (data, type, error) {
+            console.log(data);
+          }
+        });
+      },
+
+    },
+    mounted() {
+      //this.getCategory();
+      this.getCategoryDataSize();
+      this.getCategoryPage();
+    }
+  })
+
+
+</script>
+</body>
+</html>
