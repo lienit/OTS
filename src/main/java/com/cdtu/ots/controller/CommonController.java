@@ -2,6 +2,8 @@ package com.cdtu.ots.Controller;
 
 import com.alibaba.fastjson.JSON;
 import com.cdtu.ots.entity.User;
+import com.cdtu.ots.service.CategoryService;
+import com.cdtu.ots.service.GoodsService;
 import com.cdtu.ots.service.MailService;
 import com.cdtu.ots.service.UserService;
 import com.cdtu.ots.util.MD5Util;
@@ -13,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.PushBuilder;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 
 @Controller
 public class CommonController {
@@ -25,6 +27,47 @@ public class CommonController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
+    private GoodsService goodsService;
+
+
+
+    @PostMapping("/getCategory")
+    @ResponseBody
+    public String getCategory(){
+        List<Map<String, Object>> all = categoryService.findAll();
+        String s = JSON.toJSONString(all);
+        return s;
+    }
+
+    @PostMapping("/getStore")
+    @ResponseBody
+    public String getStore(int page, int size){
+        int num=0;
+
+        if (page > 1) {
+
+            for (int i = 1;i < page; i++){
+                num+=size;
+            }
+        }
+        System.out.println(num);
+        ArrayList<Map<String, Object>> all = goodsService.findAll(num, size);
+
+
+        String s = JSON.toJSONString(all);
+        return s;
+    }
+
+    @PostMapping("/getNumber")
+    @ResponseBody
+    public int getNumber(){
+        int size1 = goodsService.findSize();
+        return size1;
+    }
 
     @RequestMapping("/home")
     public String Home(){
