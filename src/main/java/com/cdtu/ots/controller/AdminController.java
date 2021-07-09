@@ -43,9 +43,9 @@ public class AdminController {
         return JSON.toJSONString(userArrayList);
     }
 
-    @PostMapping("/getCategory")
+    @PostMapping("/getAdminCategory")
     @ResponseBody
-    public String getCategory(){
+    public String getAdminCategory(){
         ArrayList<AdminCategory> categoryArrayList;
         categoryArrayList = userMapper.findCategoryById();
         return JSON.toJSONString(categoryArrayList);

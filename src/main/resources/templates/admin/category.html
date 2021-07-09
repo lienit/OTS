@@ -338,7 +338,7 @@
       },
       updateCategoryData() {
         this.getCategoryDataSize();
-        this.getCategory();
+        this.getAdminCategory();
       },
       changeCancel() {
         // 取消的时候直接设置对话框不可见即可
@@ -365,7 +365,7 @@
                     success: function (data) {
                       console.log(data);
                       if (data != 0) {
-                        _this.getCategory();
+                        _this.getAdminCategory();
                         _this.$message({
                           type: 'success',
                           message: '删除成功!'
@@ -427,11 +427,11 @@
           }
         });
       },
-      getCategory() {
+      getAdminCategory() {
         var _this = this;
         $.ajax({
           type: "POST",
-          url: "/getCategory",
+          url: "/getAdminCategory",
           dataType: "json",
           success: function (data) {
             console.log(data);
