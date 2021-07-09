@@ -124,9 +124,13 @@
                                 prop="iPrice"
                                 label="订单价格">
                         </el-table-column>
-                        <el-table-column
-                                prop="iState"
-                                label="订单状态">
+                        <el-table-column prop="iState" label="订单状态">
+                            <template slot-scope="{row: {iState}}">
+                                <span v-if="+iState === 0" style="color: hotpink">未支付</span>
+                                <span v-else-if="+iState=== 1" style="color: forestgreen">已支付</span>
+                                <span v-else-if="+iState=== 2" style="color: darkgreen">已发货</span>
+                                <span v-else style="color: red">已关闭</span>
+                            </template>
                         </el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
@@ -160,27 +164,29 @@
     </el-container>
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" width="40%">
         <el-form :model="form">
-            <el-form-item label="商品名称" :label-width="formLabelWidth">
-                <el-input v-model="form.gName" autocomplete="off" style="width: 80%;"></el-input>
+            <el-form-item label="订单名称" :label-width="formLabelWidth">
+                <el-input :disabled="true" v-model="form.gName" autocomplete="off" style="width: 80%;"></el-input>
             </el-form-item>
-            <el-form-item label="商品类别" :label-width="formLabelWidth">
-                <el-select v-model="value" filterable placeholder="请选择" @change="change($event)">
-                    <el-option
-                            v-for="item in options"
-                            :key="item.cId"
-                            :label="item.cName"
-                            :value="item.cId">
-                    </el-option>
+            <el-form-item disabled label="订单类别" :label-width="formLabelWidth">
+                <el-input :disabled="true" v-model="form.cName" autocomplete="off" style="width: 80%;"></el-input>
                 </el-select>
             </el-form-item>
-            <el-form-item label="商品图片" :label-width="formLabelWidth">
-                <el-input v-model="form.gImage" autocomplete="off" style="width: 80%;"></el-input>
+            <el-form-item label="订单地址" :label-width="formLabelWidth">
+                <el-input v-model="form.iAddress" autocomplete="off" style="width: 80%;"></el-input>
             </el-form-item>
-            <el-form-item label="商品参数" :label-width="formLabelWidth">
-                <el-input v-model="form.gParameter" autocomplete="off" style="width: 80%;"></el-input>
+            <el-form-item label="订单时间" :label-width="formLabelWidth">
+                <el-input :disabled="true" v-model="form.iDate" autocomplete="off" style="width: 80%;"></el-input>
             </el-form-item>
-            <el-form-item label="商品价格" :label-width="formLabelWidth">
-                <el-input v-model="form.gPrice" autocomplete="off" style="width: 80%;"></el-input>
+            <el-form-item label="订单价格" :label-width="formLabelWidth">
+                <el-input v-model="form.iPrice" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+            <el-form-item disabled label="订单状态" :label-width="formLabelWidth">
+                <div>
+                    <el-radio v-model="radio1" label="0">未付款</el-radio>
+                    <el-radio v-model="radio1" label="1">已付款</el-radio>
+                    <el-radio v-model="radio1" label="2">已发货</el-radio>
+                    <el-radio v-model="radio1" label="3">关闭订单</el-radio>
+                </div>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -198,19 +204,9 @@
         data: {
             username: "admin",
             indentData: "",
-            form: {
-                "gCatId": "",
-                "gId": "",
-                "gImage": "",
-                "gName": "",
-                "gNumber": "",
-                "gParameter": "",
-                "gPrice": "",
-                "gStoreId": "",
-                "cName": "",
-            },
+            form: "",
             value: "",
-            options: [{}],
+            radio1: '1',
             dialogFormVisible: false,
             formLabelWidth: '120px',
             currentPage: 1,          //当前页数
@@ -218,8 +214,6 @@
             total: 0,               //分页总条数
             searchIn: "",
             dialogTitle: "",
-            fileList: [{name: '', url: ''}],
-            uploadUrl: "",
         },
         methods: {
             handleSelect(key, keyPath) {
@@ -246,13 +240,10 @@
             },
             handleEdit(index, row) {
                 this.form = JSON.parse(JSON.stringify(row));
-                this.dialogTitle = "修改信息";
+                this.dialogTitle = "修改订单信息";
                 this.dialogFormVisible = true;
-                this.getCategoryData();
                 this.value = this.form.cName;
-                this.fileList[0].name = row.gImage;
-                this.fileList[0].url = "http://localhost:8080/image/" + row.gImage;
-                this.uploadUrl = "/uploadFile" + "?gStoreId=" +row.gStoreId +"&&gId="+row.gId
+                this.radio1 = row.iState;
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
@@ -287,9 +278,6 @@
                     });
                 }
 
-            },
-            change(val){
-                this.form.cId = val;
             },
             getIndentData() {
                 var _this = this;
@@ -327,12 +315,7 @@
                 });
             },
             dialogOk() {
-                if (this.dialogTitle === "修改信息") {
-                    this.updateGoodData();
-                }
-                if (this.dialogTitle === "新增信息") {
-                    this.addGoodData();
-                }
+
             },
             loadingStart(isShow) {
                 const loading = this.$loading({
