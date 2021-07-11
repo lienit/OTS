@@ -123,7 +123,7 @@ var ve = new Vue({
                     type: 'POST',
                     dataType: 'json',
                     data: {
-                        'mailbox': this.form.email
+                        'mailbox': this.form.wEmail
                     },
                     success: function (result) {
                         ve.veCode = result;

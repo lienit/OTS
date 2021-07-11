@@ -74,7 +74,7 @@ var ve = new Vue({
 
             var number = /^\d{6}$/;
             console.log(number.test(this.form.authCode));
-            if (this.form.authCode=="" && this.veCode == "" && !number.test(this.form.authCode)){
+            if (this.form.authCode=="" || this.veCode == "" || !number.test(this.form.authCode)){
                 ve.$message({
                     message: '请填写校验码！',
                     type: 'warning'

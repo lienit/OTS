@@ -13690,7 +13690,7 @@ var ve = new Vue({
         },
         submitForm(){
             //匹配汉字详细信息5-40个字
-            var hPattern = /^[\u4e00-\u9fa5]{5,40}$/;
+            var hPattern = /^[\u4e00-\u9fa5]|[1-9]{5,40}$/;
             //匹配邮编
             var yPattern = /^[1-9]\d{5}(?!\d)$/;
             //匹配汉字收货人姓名1-25

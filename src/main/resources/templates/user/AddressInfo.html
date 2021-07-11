@@ -152,15 +152,7 @@
                     <el-button type="text" size="small" slot="reference" @click="delAddress(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
-                <el-table-column
-                        fixed="right"
-                        label="操作"
-                        width="100" :current-row-key="1">
-                  <template slot-scope="scope">
 
-                    <el-button  type="text" size="small">设为默认</el-button>
-                  </template>
-                </el-table-column>
               </el-table>
             </template>
 
@@ -196,7 +188,7 @@
                     <el-input v-model="formEdit.aPhone" placeholder="请输入手机号" style="margin-right: 500px;width: 300px"></el-input>
                   </el-form-item >
                   <el-form-item label="默认地址" prop="delivery" style="width: 100px">
-                    <el-switch v-model="formEdit.isDefault" ></el-switch>
+                    <el-switch v-model="formEdit.isDefault"  ></el-switch>
                   </el-form-item>
 
                 </el-form>

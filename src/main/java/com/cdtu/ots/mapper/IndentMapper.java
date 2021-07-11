@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -38,4 +39,7 @@ public interface IndentMapper {
      */
     @Select("SELECT COUNT(iId) FROM indent WHERE iSotreId = #{gStoreId};")
     public int findSizeByStoreId(@Param("gStoreId") String gStoreId);
+
+    @Select("insert into indent(iUserId,iSotreId,iCatId,iGoodsId,iPrice,iAddress,iDate) values(#{iUserId},#{iSotreId},#{iCatId},#{iGoodsId},#{iPrice},#{iAddress},#{iDate})")
+    public boolean insertINdent(int iUserId, int iSotreId, int iCatId, int iGoodsId, Double iPrice, String iAddress, String iDate );
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>商家入驻</title>
@@ -68,42 +68,46 @@
             <el-main>
                 <el-card class="box-card" style="width: 800px;height: 1000px;">
                     <h1>Hi,{{username}},欢迎在本网站免费开店！</h1>
-                    <el-form id="notApp" ref="form" :model="form" label-width="80px" style="margin-left: 50px" hidden>
+                    <div id="notApp"  hidden>
+                        <el-form  ref="form" :model="form" label-width="80px" style="margin-left: 50px" >
 
-                        <el-form-item label="开店类型:" style="margin-right: 470px">
+                            <el-form-item label="开店类型:" style="margin-right: 470px">
                                 个人店铺（免费开店）
-                        </el-form-item>
-                        <el-form-item label="掌柜名：:" style="margin-right: 550px">
-                            {{username}}
-                        </el-form-item>
-                        <el-form-item style="margin-right: 200px">
-                            <el-button type="primary" @click="submitForm">立即申请</el-button>
-                        </el-form-item>
-                    </el-form>
+                            </el-form-item>
+                            <el-form-item label="掌柜名：:" style="margin-right: 550px">
+                                {{username}}
+                            </el-form-item>
+                            <el-form-item style="margin-right: 200px">
+                                <el-button type="primary" @click="submitForm">立即申请</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
 
-                    <template  >
-                        <el-table
-                                stripe
-                                :data="tableData"
-                                style="width: 100%"id="apply"  hidden>
-                            <el-table-column
-                                    prop="shopkeeper"
-                                    label="掌柜名"
-                                    width="180">
-                            </el-table-column>
-                            <el-table-column
-                                    prop="storeSt"
-                                    label="开店类型"
-                                    width="180">
-                            </el-table-column>
-                            <el-table-column
-                                    prop="Review"
-                                    label="审核状态"
-                                    width="180">
+                    <div  id="apply" hidden>
+                        <template  >
+                            <el-table
+                                    :data="tableData"
+                                    style="width: 100%">
+                                <el-table-column
+                                        prop="shopkeeper"
+                                        label="掌柜名"
+                                        width="180">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="storeSt"
+                                        label="店铺类型"
+                                        width="180">
 
-                            </el-table-column>
-                        </el-table>
-                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="Review"
+                                        label="审核状态"
+                                        width="180">
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </div>
+
                 </el-card>
             </el-main>
         </el-container>
@@ -122,15 +126,16 @@
                     var parse = JSON.parse(result);
                     ve.username = parse.userName;
 
-                    ve.tableData.shopkeeper = ve.username;
-                    ve.tableData.storeSt = "个人店铺";
-                    ve.tableData.Review = "未通过";
+                    ve.tableData[0].shopkeeper = ve.username;
+                    ve.tableData[0].storeSt = "个人店铺";
+                    ve.tableData[0].Review = "未通过";
                     console.log(ve.tableData);
+                    console.log(parse.uLevel);
                     if (parse.uLevel=="1"){
                         $("#notApp").show();
-                        $("#apply").hide();
+
                     }
-                    if (parse.uLevel=="2"){
+                    else if (parse.uLevel=="2"){
                         $("#notApp").hide();
                         $("#apply").show();
                     }

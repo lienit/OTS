@@ -137,6 +137,7 @@ var vm = new Vue({
     methods: {
         handleSizeChange(val) {
             this.pageSize = val;
+            this.getStore();
             console.log(`每页 ${val} 条`);
         },
         handleCurrentChange(val) {
