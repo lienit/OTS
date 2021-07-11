@@ -129,7 +129,8 @@ public class BusinessManController {
         String gStoreId = UseuIdGetgStoreId(request);
         int err = 0;
         JSONObject good_Obj = JSONObject.parseObject(goods);
-        Goods _goods = new Goods(good_Obj.getInteger("gCatId"), Integer.parseInt(gStoreId), good_Obj.getString("gName"),
+        Goods _goods = new Goods(good_Obj.getInteger("gCatId"), Integer.parseInt(gStoreId),
+                good_Obj.getString("gName"),
                 good_Obj.getDouble("gPrice"), good_Obj.getString("gImage"),
                 good_Obj.getString("gParameter"), good_Obj.getInteger("gNumber"));
 
@@ -233,13 +234,16 @@ public class BusinessManController {
         ArrayList<Map<String, Object>> data = indentMapper.getCategoryIndent(gStoreId);
         ArrayList<String> name = new ArrayList<>();
         ArrayList<Object> number = new ArrayList<>();
+        ArrayList<Object> price = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             name.add(data.get(i).get("cName").toString());
             number.add(data.get(i).get("number"));
+            price.add(data.get(i).get("price"));
         }
         JSONObject chartData = new JSONObject();
         chartData.put("number", number);
         chartData.put("name", name);
+        chartData.put("price", price);
 
         return JSON.toJSONString(chartData);
     }
@@ -271,5 +275,22 @@ public class BusinessManController {
     public int getIndentDataSize(HttpServletRequest request) {
         String gStoreId = UseuIdGetgStoreId(request);
         return indentMapper.findSizeByStoreId(gStoreId);
+    }
+
+    @PostMapping("/updateIndentData")
+    @ResponseBody
+    public int updateIndentData(String indent){
+
+        JSONObject indent_Obj = JSONObject.parseObject(indent);
+        int err = 0;
+        try {
+            err = indentMapper.updateIndentDataByGid(indent_Obj.getString("iAddress"),
+                    indent_Obj.getString("iState"), indent_Obj.getDouble("iPrice"),
+                    indent_Obj.getString("sId"), indent_Obj.getString("iId"));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return err;
+
     }
 }

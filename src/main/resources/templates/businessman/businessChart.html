@@ -8,7 +8,6 @@
     <script th:src="@{/js/index.js}"></script>
     <script th:src="@{/js/jquery.min.js}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.4.1/chart.min.js"></script>
-    <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
     <style>
         #app {
             position: absolute;
@@ -94,8 +93,9 @@
                 <el-row :gutter="50">
                     <el-col :span="12"><canvas id="myChart"></canvas></el-col>
                 </el-row>
-                <el-row :gutter="50" style="margin-top: 50px;">
+                <el-row :gutter="80" style="margin-top: 50px;">
                     <el-col :span="7"><canvas id="myDoughnutChart"></canvas></el-col>
+                    <el-col :span="13"><canvas id="myBarChart"></canvas></el-col>
                 </el-row>
             </el-main>
         </el-container>
@@ -111,6 +111,7 @@
     var clables = [];
     var ddata = [];
     var dlables = [];
+    var bdata = [];
 
     var app = new Vue({
         el: "#app",
@@ -182,7 +183,13 @@
                         for (var i = 0; i < name.length; i++){
                             dlables.push(name[i]);
                         }
+                        var price = [];
+                        price = data.price;
+                        for (var i = 0; i < price.length; i++){
+                            bdata.push(price[i]);
+                        }
                         myDoughnutChart.update();
+                        myBarChart.update();
                     },
                     error: function (error) {
                         console.log(error);
@@ -240,22 +247,12 @@
                 label: '销量',
                 data: cdata,
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
                 ],
                 borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
                     'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
                 ],
-                borderWidth: 1
+                borderWidth: 2
             }]
         },
         options: {
@@ -266,31 +263,31 @@
                     }
                 }]
             },
-            title: {
-                display: true,
-                text: "Custom Chart Title"
+            plugins:{
+                title: {
+                    display: true,
+                    text: "每日销售数据",
+                }
             },
         }
     });
 
     // 环形图
     var ctxDoughnut = document.getElementById("myDoughnutChart");
-    ctx.height = 10;
-    ctx.width = 10;
     var myDoughnutChart = new Chart(ctxDoughnut, {
         type: "doughnut",
         data: {
             labels: dlables,
             datasets: [{
-                label: '销量',
+                label: '',
                 data: ddata,
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.9)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)'
                 ],
                 borderColor: [
                     'rgba(255,99,132,1)',
@@ -300,7 +297,7 @@
                     'rgba(153, 102, 255, 1)',
                     'rgba(255, 159, 64, 1)'
                 ],
-                borderWidth: 1
+                borderWidth: 2
             }]
         },
         options: {
@@ -311,10 +308,57 @@
                     }
                 }]
             },
-            title: {
-                display: true,
-                text: "Custom Chart Title"
+            plugins:{
+                title: {
+                    display: true,
+                    text: "类别销售数据",
+                }
+            }
+        }
+    });
+
+    // 柱状图
+    var ctxBar = document.getElementById("myBarChart");
+    var myBarChart = new Chart(ctxBar, {
+        type: "bar",
+        data: {
+            labels: dlables,
+            datasets: [{
+                data: bdata,
+                label: "销售额",
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.9)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    }
+                }]
             },
+            plugins:{
+                title: {
+                    display: true,
+                    text: "品类销售金额",
+                }
+            }
         }
     });
 </script>
