@@ -1,9 +1,7 @@
 package com.cdtu.ots.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import com.cdtu.ots.entity.Indent;
+import org.apache.ibatis.annotations.*;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -45,4 +43,6 @@ public interface IndentMapper {
                                      @Param("iPrice") Double iPrice,
                                      @Param("iSotreId") String iSotreId, @Param("iId") String iId);
 
+    @Insert("insert into indent(iUserId,iSotreId,iCatId,iGoodsId,iAddress,iMessage,iPrice,iState,iDate) values(#{iUserId},#{iSotreId},#{iCatId},#{iGoodsId},#{iAddress},#{iMessage},#{iPrice},#{iState},#{iDate})")
+    public boolean insertIndent(Indent indent);
 }

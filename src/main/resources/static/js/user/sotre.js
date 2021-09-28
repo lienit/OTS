@@ -70,7 +70,8 @@ var vm = new Vue({
             iGoodsId : "",
             iAddress : "",
             iMessage : "",
-            iPrice : "",
+            iPrice : 0,
+            iState : 0
         },
         storeList:{
             sId : '',
@@ -164,13 +165,25 @@ var vm = new Vue({
                 }
             }
         },
-        commit(){
+        commitIndet(){
+            vm.indentList.iCatId = vm.goodsList.gCatId;
+            vm.indentList.iAddress = vm.choiceData[0].aAddress;
+            vm.indentList.iSotreId = vm.storeList.sId;
+            vm.indentList.iUserId = vm.uId;
+            vm.indentList.iGoodsId = vm.goodsList.gId;
             $.ajax({
-                url : '/findAddress',
+                url : '/commitIndet',
                 type : 'POST',
                 dataType : 'text',
                 data: {
-                    "indentList" : vm.indentList
+                    "iUserId" : vm.indentList.iUserId,
+                    "iSotreId" : vm.indentList.iSotreId,
+                    "iCatId" : vm.indentList.iCatId,
+                    "iGoodsId" : vm.indentList.iGoodsId,
+                   "iAddress": vm.indentList.iAddress,
+                    "iMessage" : vm.indentList.iMessage,
+                    "iPrice" : vm.indentList.iPrice,
+                    "iState" : vm.indentList.iState
                 },
                 success : function (req){
 

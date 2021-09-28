@@ -29,6 +29,9 @@ public class StroeController {
     @Autowired
     private StoreService storeService;
 
+    @Autowired
+    private IndentService indentService;
+
 
     /**
      * 访问具体商品页面
@@ -92,8 +95,13 @@ public class StroeController {
     /**
      * 用户提交订单
      */
+    @PostMapping("/commitIndet")
+    @ResponseBody
     public String commitIndent(Indent indentList){
-        System.out.println(indentList);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        indentList.setiDate(simpleDateFormat.format(new Date()));
+        boolean b = indentService.insertIndent(indentList);
+        System.out.println(b);
         return "";
     }
 
