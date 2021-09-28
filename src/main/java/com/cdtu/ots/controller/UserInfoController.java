@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -88,6 +89,7 @@ public class UserInfoController {
         return "/user/AddressInfo";
     }
 
+//    获取用户的所有收货地址
     @RequestMapping("/findAddress")
     @ResponseBody
     public String findAddress(HttpServletRequest request){
@@ -96,10 +98,22 @@ public class UserInfoController {
         User user =(User) request.getSession().getAttribute("user");
 
         ArrayList<Map<String, Object>> all = addressService.findAll(user.getuId());
+
         String s = JSON.toJSONString(all);
 
         return s;
     }
+
+    //前后端分离测试
+    @RequestMapping("/testAddress")
+    @ResponseBody
+    public String testAddress(String id){
+        System.out.println("id="+id);
+        ArrayList<Map<String, Object>> all = addressService.findAll(4);
+        String s = JSON.toJSONString(all);
+        return s;
+    }
+
 
     @PostMapping("/insertAddress")
     @ResponseBody
@@ -159,6 +173,14 @@ public class UserInfoController {
         return message;
     }
 
+    @RequestMapping("/test1")
+    @ResponseBody
+    public  String test(){
+        List<User> all = userService.findAll();
+        String s = JSON.toJSONString(all);
+        System.out.println("dsahjfasdhj"+s);
+        return s;
+    }
     @PostMapping("/deleteAddress")
     @ResponseBody
     public String deleteAddress(HttpServletRequest request, int aId){

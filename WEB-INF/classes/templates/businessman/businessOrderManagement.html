@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商家中心</title>
+    <script th:src="@{/js/vue.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <style>
+        #app {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .el-header, .el-footer {
+            background-color: #545c64;
+            color: white;
+        }
+
+        .el-main {
+            background-color: #E9EEF3;
+            color: #333;
+            text-align: center;
+        }
+
+        .el-aside {
+            background-color: #545c64;
+            color: #333;
+            text-align: center;
+            height: 86vh;
+        }
+
+        .el-loading-parent--relative {
+            position: unset !important;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-menu
+                    text-color="#fff"
+                    active-text-color="white"
+                    background-color="#545c64"
+                    default-active="1"
+                    mode="horizontal"
+                    @select="handleSelect">
+                <el-row>
+                    <el-col :span="21">
+                        <span index="1" style="font-size: x-large; line-height: 60px;">商家管理中心</span>
+                    </el-col>
+                    <el-col :span="3">
+                        <el-submenu index="2">
+                            <template slot="title">欢迎：{{username}}</template>
+                            <el-menu-item index="2-1">个人信息</el-menu-item>
+                            <el-menu-item index="2-2">帮助</el-menu-item>
+                            <el-menu-item index="2-3">退出登录</el-menu-item>
+                        </el-submenu>
+                    </el-col>
+                </el-row>
+            </el-menu>
+        </el-header>
+        <el-container>
+            <el-aside width="200px">
+                <el-menu
+                        default-active="2"
+                        class="el-menu-vertical-demo"
+                        @select="handleSelect"
+                        background-color="#545c64"
+                        text-color="#fff"
+                        active-text-color="#ffd04b">
+                    <el-menu-item index="1">
+                        <i class="el-icon-menu"></i>
+                        <span slot="title">商品管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="2">
+                        <i class="el-icon-document"></i>
+                        <span slot="title">订单管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="3">
+                        <i class="el-icon-setting"></i>
+                        <span slot="title">数据统计</span>
+                    </el-menu-item>
+                </el-menu>
+            </el-aside>
+            <el-main>
+                <el-row>
+                    <el-col :span="6" :push="18">
+                        <div style="margin-bottom: 10px;">
+                            <el-input placeholder="请输入内容" v-model="searchIn">
+                                <el-button slot="append" icon="el-icon-search" @click="searchIndent">搜索</el-button>
+                            </el-input>
+                        </div>
+                    </el-col>
+                </el-row>
+                <template>
+                    <el-table
+                            :data="indentData"
+                            border
+                            style="width: 100%">
+                        <el-table-column
+                                fixed
+                                prop="gName"
+                                label="订单名称"
+                                width="300">
+                        </el-table-column>
+                        <el-table-column
+                                prop="cName"
+                                label="订单类别">
+                        </el-table-column>
+                        <el-table-column
+                                prop="iAddress"
+                                label="订单地址">
+                        </el-table-column>
+                        <el-table-column
+                                prop="iMessage"
+                                label="客户留言">
+                        </el-table-column>
+                        <el-table-column
+                                prop="iPrice"
+                                label="订单价格">
+                        </el-table-column>
+                        <el-table-column prop="iState" label="订单状态">
+                            <template slot-scope="{row: {iState}}">
+                                <span v-if="+iState === 0" style="color: hotpink">未支付</span>
+                                <span v-else-if="+iState=== 1" style="color: forestgreen">已支付</span>
+                                <span v-else-if="+iState=== 2" style="color: darkgreen">已发货</span>
+                                <span v-else style="color: red">已关闭</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作">
+                            <template slot-scope="scope">
+                                <el-button
+                                        size="mini"
+                                        @click="handleEdit(scope.$index, scope.row)">编辑
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!---->
+                    <div class="block" style="margin-top: 10px;">
+                        <el-pagination
+                                prev-text="上一页"
+                                next-text="下一页"
+                                @size-change="handleSizeChange"
+                                @current-change="handleCurrentChange"
+                                :current-page="currentPage"
+                                :page-size="pageSize"
+                                :page-sizes="[5, 10, 15, 20]"
+                                layout=" prev, pager, next, sizes, total"
+                                :total="total">
+                        </el-pagination>
+                    </div>
+                </template>
+            </el-main>
+        </el-container>
+        <el-footer style="line-height: 60px; font-size: 12px; color: white; text-align: center;">
+            2021©️ 网上购物系统
+        </el-footer>
+    </el-container>
+    <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" width="40%">
+        <el-form :model="form">
+            <el-form-item label="订单名称" :label-width="formLabelWidth">
+                <el-input :disabled="true" v-model="form.gName" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+            <el-form-item disabled label="订单类别" :label-width="formLabelWidth">
+                <el-input :disabled="true" v-model="form.cName" autocomplete="off" style="width: 80%;"></el-input>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="订单地址" :label-width="formLabelWidth">
+                <el-input v-model="form.iAddress" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+            <el-form-item label="订单时间" :label-width="formLabelWidth">
+                <el-input :disabled="true" v-model="form.iDate" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+            <el-form-item label="订单价格" :label-width="formLabelWidth">
+                <el-input v-model="form.iPrice" autocomplete="off" style="width: 80%;"></el-input>
+            </el-form-item>
+            <el-form-item disabled label="订单状态" :label-width="formLabelWidth">
+                <el-radio-group v-model="radio1" @change="change">
+                    <el-radio v-model="radio1" label="0">未付款</el-radio>
+                    <el-radio v-model="radio1" label="1">已付款</el-radio>
+                    <el-radio v-model="radio1" label="2">已发货</el-radio>
+                    <el-radio v-model="radio1" label="3">关闭订单</el-radio>
+                </el-radio-group>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="dialogOk">确 定</el-button>
+        </div>
+    </el-dialog>
+
+</div>
+
+</body>
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            username: "admin",
+            indentData: "",
+            form: "",
+            value: "",
+            radio1: '1',
+            dialogFormVisible: false,
+            formLabelWidth: '120px',
+            currentPage: 1,          //当前页数
+            pageSize: 10,            //每页显示条目数
+            total: 0,               //分页总条数
+            searchIn: "",
+            dialogTitle: "",
+        },
+        methods: {
+            handleSelect(key, keyPath) {
+                console.log(key);
+                if (key == "2-3") {
+                    $.ajax({
+                        url: '/quit',
+                        type: 'POST',
+                        dataType: 'text',
+                        success: function (result) {
+                            if (result == "success") {
+                                app.username = "";
+                                window.location.reload();
+                            }
+                        }
+                    })
+                }
+                if (key == 3) {
+                    window.location.replace("/businessChart");
+                }
+                if (key == 1) {
+                    window.location.replace("/businessCenter");
+                }
+                if (key == 2) {
+                    window.location.replace("/businessOrderManagement");
+                }
+            },
+            handleEdit(index, row) {
+                this.form = JSON.parse(JSON.stringify(row));
+                this.dialogTitle = "修改订单信息";
+                this.dialogFormVisible = true;
+                this.value = this.form.cName;
+                this.radio1 = row.iState;
+            },
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+                this.pageSize = val;
+                this.getIndentData();
+            },
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+                this.currentPage = val;
+                this.getIndentData();
+            },
+            change(val){
+                this.form.iState = val;
+            },
+            searchIndent() {
+                var _this = this;
+                if (this.searchIn == "") {
+                    this.updateIndentData();
+                } else {
+                    $.ajax({
+                        type: "POST",
+                        url: "/searchIndent",
+                        dataType: "json",
+                        data: {
+                            "searchIn": this.searchIn,
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            _this.goodsData = data;
+                            _this.total = Object.keys(data).length;
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                }
+
+            },
+            getIndentData() {
+                var _this = this;
+                var dataPage = _this.currentPage;
+                var dataSize = _this.pageSize;
+                console.log(dataPage);
+                $.ajax({
+                    type: "POST",
+                    url: "/getIndentDatas",
+                    dataType: "json",
+                    data: {
+                        "dataPage": dataPage,
+                        "pageSize": dataSize,
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        _this.indentData = data;
+                    },
+                    error: function (data, type, error) {
+                        console.log(data);
+                    }
+                });
+            },
+            getIndentDataSize() {
+                var _this = this
+                $.ajax({
+                    type: "POST",
+                    url: "/getIndentDataSize",
+                    success: function (data) {
+                        _this.total = data;
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            },
+            dialogOk() {
+                console.log(this.form);
+                this.$confirm('此操作将修改订单信息, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.loadingStart(1);
+                    var _this = this;
+                    $.ajax({
+                        type: "POST",
+                        url: "/updateIndentData",
+                        //dataType: "json",
+                        data: {
+                            "indent" : JSON.stringify(this.form)
+                        },
+                        success: function (data) {
+                            _this.loadingStart(2);
+                            console.log(data);
+                            if (data !== 0) {
+                                _this.updateIndentData();
+                                _this.$message({
+                                    type: 'success',
+                                    message: '修改成功!'
+                                });
+                            } else {
+                                _this.$message({
+                                    showClose: true,
+                                    message: '修改失败，请重试！',
+                                    type: 'error'
+                                });
+                            }
+                            _this.dialogFormVisible = false;
+                        },
+                        error: function (err) {
+                            console.log(err);
+                            _this.dialogFormVisible = false;
+                            _this.loadingStart(2);
+                        }
+                    })
+                }).catch(() => {
+
+                });
+
+            },
+            loadingStart(isShow) {
+                const loading = this.$loading({
+                    lock: true,
+                    text: 'Loading',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(255, 255, 255, 0.7)'
+                });
+                if (isShow === 2) {
+                    loading.close();
+                }
+            },
+            updateIndentData() {
+                this.getIndentDataSize();
+                this.getIndentData();
+            },
+            iStatus() {
+                var _this = this;
+                $.ajax({
+                    url: '/iStatus',
+                    type: 'POST',
+                    dataType: 'text',
+                    success: function (result) {
+                        console.log(result)
+                        if (result != "") {
+                            var parse = JSON.parse(result);
+                            _this.username = parse.userName;
+                            if (parse.uLevel != "3") {
+                                window.location.replace("/login");
+                            }
+                            _this.updateIndentData();
+                        } else {
+                            window.location.replace("/login");
+                        }
+                    }
+                })
+            }
+        },
+        mounted() {
+            this.iStatus();
+        }
+    })
+
+
+</script>
+</html>

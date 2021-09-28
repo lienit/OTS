@@ -13620,7 +13620,8 @@ var ve = new Vue({
             {
                 value: '澳门特别行政区',
                 label: '澳门特别行政区'
-            }]
+            }],
+        visible: false
         ,username :'',
         coutAdd : '',
         tableData: [{
@@ -13662,9 +13663,9 @@ var ve = new Vue({
         },
         delAddress(row){
             this.formEdit = JSON.parse(JSON.stringify(row));
-            this.dialogVisible =true;
+
             this.mesAdd = "删除";
-            $("#EditAdd").hide();
+
             $("#delAddress").show();
         },
         handleClick(row) {
@@ -13815,6 +13816,7 @@ var ve = new Vue({
             }
             else if(this.mesAdd == "删除"){
                 this.dialogVisible =false;
+                this.visible = false;
                 $.ajax({
                     url: '/deleteAddress',
                     type: 'POST',

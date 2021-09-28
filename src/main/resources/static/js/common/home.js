@@ -54,7 +54,7 @@ window.onload = function (){
         success : function (result){
             if (result!=""){
                 vm.sNumber = parseInt(result);
-                console.log(vm.sNumber);
+
             }
         }
     })
@@ -80,7 +80,8 @@ var vm = new Vue({
                 gName : '',
                 gPrice :'',
                 gParameter : '',
-                gNumber : ''
+                gNumber : '',
+                sName : ''
             }],
             pageSize:4,
             currentPage4: 1,
@@ -161,7 +162,7 @@ var vm = new Vue({
                         var parse = JSON.parse(result);
                         console.log(parse);
                         vm.storeList = parse;
-
+                        console.log(vm.storeList.gStoreId);
                     }
                 }
             })

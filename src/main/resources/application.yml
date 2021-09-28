@@ -27,7 +27,7 @@ spring:
 
 # TomCat端口号
 server:
-  port: 8080
+  port: 8181
 
 # mybatis配置
 mybatis:

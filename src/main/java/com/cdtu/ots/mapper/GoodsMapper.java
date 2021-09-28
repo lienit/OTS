@@ -27,9 +27,18 @@ public interface GoodsMapper {
     public ArrayList<Map<String, Object>> findAllByStoreIdAndSize(@Param("gStoreId") String gStoreId, @Param("page") int page,
                                                                   @Param("size") int size);
 
-    @Select("select * from Goods limit #{page},#{size}")
+    /**
+     * 查询所有件商品
+     * @param page 页数，size 显示个数
+     * @return int 总数
+     */
+    @Select("select * from Goods g,store s where g.gStoreId = s.sId limit #{page},#{size}")
     public ArrayList<Map<String, Object>> findAll(int  page, int size);
-
+    /**
+     * 查询具体商品
+     * @param gId 商家id
+     * @return int 总数
+     */
     @Select("select * from goods where gId=#{gId}")
     public Goods findByGId(int gId);
     /**

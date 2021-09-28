@@ -5,6 +5,8 @@ import com.cdtu.ots.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     @Autowired
@@ -23,6 +25,10 @@ public class UserService {
     public User findByLevel(String uLevel){
         User byLevel = userMapper.findByLevel(uLevel);
         return byLevel;
+    }
+    public List<User> findAll(){
+        List<User> all = userMapper.findAll();
+        return all;
     }
 
     public Boolean insertUser(User user){

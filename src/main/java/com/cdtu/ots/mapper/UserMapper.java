@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
     @Select("select * from user where userName=#{username}")
@@ -17,7 +19,8 @@ public interface UserMapper {
     @Select("SELECT * from user where uLevel = #{uLevel}")
     public User findByLevel(String uLevel);
 
-
+    @Select("select * from user")
+    public List<User> findAll();
 
     @Insert("insert into user(userName,password,uPhone,uEmail) values(#{userName},#{password},#{uPhone},#{uEmail})")
     public Boolean insertUser(User user);

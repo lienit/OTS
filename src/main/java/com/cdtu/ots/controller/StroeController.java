@@ -3,6 +3,7 @@ package com.cdtu.ots.controller;
 import com.alibaba.fastjson.JSON;
 import com.cdtu.ots.entity.Address;
 import com.cdtu.ots.entity.Goods;
+import com.cdtu.ots.entity.Indent;
 import com.cdtu.ots.entity.Store;
 import com.cdtu.ots.service.AddressService;
 import com.cdtu.ots.service.GoodsService;
@@ -28,12 +29,12 @@ public class StroeController {
     @Autowired
     private StoreService storeService;
 
-    @Autowired
-    private AddressService addressService;
 
-    @Autowired
-    private IndentService indentService;
-
+    /**
+     * 访问具体商品页面
+     * @param gId
+     * @return
+     */
     @RequestMapping("/detailedSto")
     public String detailedSto(int gId){
         Goods byGId = goodsService.findByGId(gId);
@@ -52,7 +53,19 @@ public class StroeController {
 
         return "/user/detailedSto";
     }
+    /**
+     * 获取用户收货地址
+     */
+    @PostMapping("/getUserAddress")
+    public String getUserAddress(String userId){
+        System.out.println("userId="+userId);
+        return  null;
+    }
 
+    /**
+     * 从Redis数据库中获取对应商品信息
+     * @return
+     */
     @PostMapping("/getParticular")
     @ResponseBody
     public String getParticular(){
@@ -63,6 +76,10 @@ public class StroeController {
         return goods;
     }
 
+    /**
+     * 从Redis数据库中获取对应商家信息
+     * @return
+     */
     @PostMapping("/getStoreInfo")
     @ResponseBody
     public String getStore(){
@@ -72,16 +89,12 @@ public class StroeController {
         return store;
     }
 
-    @PostMapping("/setIndent")
-    @ResponseBody
-    public String setIndent(int iUserId,int iSotreId, int iCatId, int iGoodsId, Double iPrice){
-        Address aDefault = addressService.findDefault(true, iUserId);
-        String address = aDefault.getaAddress();
-        String format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
-        indentService.insertINdent(iUserId,iSotreId,iCatId,iGoodsId,iPrice, address, format);
-
-        return "success";
+    /**
+     * 用户提交订单
+     */
+    public String commitIndent(Indent indentList){
+        System.out.println(indentList);
+        return "";
     }
-
 
 }

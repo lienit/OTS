@@ -152,6 +152,7 @@ var ve = new Vue({
         },
         onSignIn() {
             var pPattern = /^.*(?=.{6,32})(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).*$/;
+
             if (ve.form.password1 == "" || ve.form.password2 == ""){
                 ve.$message({
                     message: '请输入密码！',

@@ -141,35 +141,159 @@
 
         </el-header>
         <el-main>
-            <el-card class="box-card"   style="width: 1000px;margin-left: 500px">
+            <el-card class="box-card"   style="width: 1000px;margin-left: 300px">
                 <el-container>
-                    <el-aside width="500px"><template>
+                    <el-aside width="500px">
+                        <template>
 
 
-                                <el-image :src="src" fit="fit" style="width: 500px;height: 500px">
-                                    <div slot="placeholder" class="image-slot">
-                                        加载中<span class="dot">...</span>
-                                    </div>
-                                </el-image>
+                            <el-image :src="src" fit="fit" style="width: 500px;height: 500px">
+                                <div slot="placeholder" class="image-slot">
+                                    加载中<span class="dot">...</span>
+                                </div>
+                            </el-image>
 
-                    </template></el-aside>
+                        </template>
+                    </el-aside>
                     <el-main style="line-height: 0;height: 500px;word-wrap:break-word; word-break:break-all;">
 
                         <el-form ref="form" :model="form" label-width="80px">
-                            <el-form-item label="商品名">
+                            <el-form-item label="商品名：">
                                 {{goodsList.gName}}
                             </el-form-item>
-                            <el-form-item label="价格" style="color: red">
+                            <el-divider></el-divider>
+                            <el-form-item label="价格：" style="color: red">
                                 ￥{{goodsList.gPrice}}
                             </el-form-item>
-                            <el-form-item label="商品参数" >
+                            <el-divider></el-divider>
+                            <el-form-item label="商品参数:" >
                                 {{goodsList.gParameter}}
                             </el-form-item>
-                            <el-form-item  >
-                                <el-button type="primary" @click="submitForm">提交</el-button>
+                            <el-divider></el-divider>
+                            <el-form-item  style="margin-left: 100px">
+                                <el-button type="danger" @click="submitForm">立即购买</el-button>
                             </el-form-item>
                         </el-form>
 
+
+
+
+                        <el-dialog
+                                title="提示"
+                                :visible.sync="dialogVisible"
+                                width="50%"
+                                :before-close="handleClose">
+                            <el-container>
+                                <el-header>确认订单</el-header>
+                                <el-main style="width: 100%;padding: 0">
+                                    <el-button style="width: 100%" v-popover:popover>
+                                        <template>
+                                            <el-table
+                                                    :data="choiceData"
+                                                    style="width: 100%" debounce="500">
+                                                <el-table-column
+                                                        prop="aConsignee"
+                                                        label="收货人"
+                                                        width="60">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        prop="aPhone"
+                                                        label="联系电话"
+                                                        width="150">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        prop="aAddress"
+                                                        label="收货地址">
+                                                </el-table-column>
+                                            </el-table>
+                                        </template>
+
+                                    </el-button>
+
+                                    <el-popover
+                                            ref="popover"
+                                            placement="right"
+                                            width="400"
+                                            trigger="click"
+                                            v-model="visible">
+                                        <el-table :data="tableData">
+                                            <el-table-column
+                                                    prop="aConsignee"
+                                                    label="收货人"
+                                                    width="60">
+                                            </el-table-column>
+                                            <el-table-column
+                                                    prop="aPhone"
+                                                    label="联系电话"
+                                                    width="150">
+                                            </el-table-column>
+                                            <el-table-column
+                                                    prop="aAddress"
+                                                    label="收货地址">
+                                            </el-table-column>
+                                            <el-table-column
+                                                    fixed="right"
+                                                    label="操作"
+                                                    width="100">
+                                                <template slot-scope="scope">
+                                                    <el-button @click="edit(scope.row)" type="text"  size="small">选择地址</el-button>
+                                                </template>
+
+                                            </el-table-column>
+                                        </el-table>
+
+                                    </el-popover>
+                                    <div style="margin-top: 30px;margin-bottom: 50px">
+                                        <i class="el-icon-s-shop">{{storeList.sName}}</i>
+                                    </div>
+                                    <el-card class="box-card"  >
+                                        <el-container>
+                                            <el-aside >
+                                                <template>
+
+
+                                                    <el-image :src="src" fit="fit" style="width: 300px;height: 350px">
+                                                        <div slot="placeholder" class="image-slot">
+                                                            加载中<span class="dot">...</span>
+                                                        </div>
+                                                    </el-image>
+
+                                                </template>
+                                            </el-aside>
+
+                                            <el-main>
+                                                <el-form ref="form" :model="form" label-width="80px" style="margin-top: 0">
+                                                    <el-form-item label="商品名：">
+                                                        {{goodsList.gName}}
+                                                    </el-form-item>
+                                                    <el-form-item label="价格：" >
+                                                        ￥{{goodsList.gPrice}}
+                                                    </el-form-item>
+                                                    <el-form-item label="数量：" >
+                                                        <el-input-number v-model="numIndent" @change="updatePrice" :min="1" :max="10" size="mini" ></el-input-number>
+                                                    </el-form-item>
+                                                    <el-form-item label="备注：" >
+                                                        <el-input
+                                                                type="textarea"
+                                                                :rows="2"
+                                                                placeholder="请输入内容"
+                                                                v-model="indentList.iMessage">
+                                                        </el-input>
+                                                    </el-form-item>
+                                                    <el-form-item  >
+                                                        共{{numIndent}}件，合计：￥{{indentList.iPrice}}元
+                                                    </el-form-item>
+
+                                                    <el-button type="warning" style="margin-left: 150px" @click="commit" plain>提交订单</el-button>
+                                                </el-form>
+
+                                            </el-main>
+                                        </el-container>
+                                    </el-card>
+                                </el-main>
+                            </el-container>
+
+                        </el-dialog>
 
 
                     </el-main>
@@ -180,130 +304,9 @@
     </el-container>
 </div>
 
-    <script>
+    <script th:src="@{/js/user/sotre.js}">
 
-        window.onload = function () {
-            $.ajax({
-                url: '/iStatus',
-                type: 'POST',
-                dataType: 'text',
-                success: function (result) {
-                    console.log(result)
-                    if (result != "") {
-                        var parse = JSON.parse(result);
-                        vm.username = parse.userName;
-                        vm.uId = parse.uId;
-                        $('.userStatus1').show();
-                        $('.userStatus2').hide();
-                        if (parse.uLevel != "3") {
-                            vm.vip = "普通会员";
-                        }
-                    }
-                }
-            });
 
-            $.ajax({
-                url: '/getParticular',
-                type: 'POST',
-                dataType: 'text',
-                success: function (result) {
-                    var parse = JSON.parse(result);
-                    vm.goodsList = parse;
-                    console.log(vm.goodsList);
-                }
-            });
-            $.ajax({
-                url: '/getStoreInfo',
-                type: 'POST',
-                dataType: 'text',
-                success: function (result) {
-                    var parse = JSON.parse(result);
-                    vm.storeList = parse;
-                    console.log(vm.storeList);
-                }
-            })
-        }
-        var vm = new Vue({
-            el : '#app',
-            data : {
-                activeIndex: '1',
-                activeIndex2: '1',
-                input3: '',
-                select: '',
-                username : '',
-                uId:'',
-                vip:'',
-                num3 : '',
-                integral:'0',
-                src : "/image/common/store.png",
-                goodsList :{
-                    gId:"",
-                    gStoreId:'',
-                    gCatId : "",
-                    gName : '',
-                    gPrice :'',
-                    gParameter : '',
-                    gNumber : ''
-                },
-                storeList:{
-                    sId : '',
-                    sName : '',
-                    sUserId : '',
-                },
-                form : {
-
-                },
-                dialogVisible: false,
-                tableData:{
-                    date:''
-                }
-            },
-            methods: {
-                handleSelect(key, keyPath) {
-                    console.log(key, keyPath);
-                }
-                , quit() {
-                    $.ajax({
-                        url: '/quit',
-                        type: 'POST',
-                        dataType: 'text',
-                        success: function (result) {
-                            if (result == "success") {
-                                vm.username = "";
-                                window.location.reload();
-                            }
-                        }
-                    })
-                },submitForm(){
-                    if (this.username==""){
-                        vm.$message({
-                            message: '请先登录或注册！',
-                            type: 'warning'
-                        });
-                    }else {
-                        $.ajax({
-                            url: '/setIndent',
-                            type: 'POST',
-                            dataType: 'text',
-                            data: {
-                                "iUserId" : vm.uId,
-                                "iSotreId" :vm.storeList.sId,
-                                "iCatId" : vm.goodsList.gCatId,
-                                "iGoodsId" : vm.goodsList.gId,
-                                "iPrice" : vm.goodsList.gPrice,
-                            },
-                            success: function (result) {
-                                vm.$message({
-                                    message: '购买成功！',
-                                    type: 'warning'
-                                });
-                            }
-                        })
-                    }
-                }
-            }
-
-        })
     </script>
 </body>
 </html>

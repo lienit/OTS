@@ -3,6 +3,7 @@ package com.cdtu.ots.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -38,4 +39,10 @@ public interface IndentMapper {
      */
     @Select("SELECT COUNT(iId) FROM indent WHERE iSotreId = #{gStoreId};")
     public int findSizeByStoreId(@Param("gStoreId") String gStoreId);
+
+    @Update("UPDATE indent SET iAddress = #{iAddress},iState = #{iState}, iPrice = #{iPrice} WHERE iSotreId = #{iSotreId} and iId = #{iId}")
+    public int updateIndentDataByGid(@Param("iAddress") String iAddress, @Param("iState") String iState,
+                                     @Param("iPrice") Double iPrice,
+                                     @Param("iSotreId") String iSotreId, @Param("iId") String iId);
+
 }

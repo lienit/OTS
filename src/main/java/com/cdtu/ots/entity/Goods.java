@@ -18,6 +18,7 @@ public class Goods {
     private String gImage;
     private String gParameter;
     private int gNumber;
+    private String cName;
 
     public Goods() {
 

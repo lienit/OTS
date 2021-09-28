@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>地址管理</title>
+    <script th:src="@{/js/vue.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/user/addressInfo.css}">
+</head>
+<body>
+  <div id="app">
+    <el-container>
+      <el-header>
+        <el-menu
+                text-color="#fff"
+                active-text-color="white"
+                background-color="#545c64"
+                default-active="1"
+                mode="horizontal"
+                @select="handleSelect">
+          <el-row>
+            <el-col :span="19">
+              <span index="1" style="font-size: x-large; line-height: 60px;">账号管理</span>
+            </el-col>
+            <el-col :span="2">
+              <el-menu-item index="4" >
+                <el-link :underline="false" th:href="@{/home}"  style="color: #FFFFFF;margin-left: 25px">
+                  首页<i class="el-icon-s-goods"></i>
+                </el-link>
+              </el-menu-item>
+            </el-col>
+            <el-col :span="3">
+              <el-submenu index="2">
+                <template slot="title">欢迎：{{username}}</template>
+                <el-menu-item index="2-1">我的订单</el-menu-item>
+                <el-menu-item index="2-2" ><el-link th:href="@{/pswEdit}" :underline="false"  style="color: #FFFFFF" target="_blank">修改密码</el-link></el-menu-item>
+                <el-menu-item index="2-3">足迹</el-menu-item>
+                <el-menu-item index="2-4" @click="quit">退出登录</el-menu-item>
+              </el-submenu>
+            </el-col>
+          </el-row>
+        </el-menu>
+      </el-header>
+      <el-container>
+        <el-aside width="200px" >
+          <el-menu
+                  default-active="2"
+                  class="el-menu-vertical-demo"
+                  @open="handleOpen"
+                  @close="handleClose">
+
+            <el-menu-item index="1">
+              <i class="el-icon-menu"></i>
+              <span slot="title"><el-link th:href="@{/userInfo}">安全设置</el-link></span>
+            </el-menu-item>
+            <el-menu-item index="2">
+              <i class="el-icon-document"></i>
+              <span slot="title"><el-link th:href="@{/addressInfo}"> 地址管理</el-link></span>
+            </el-menu-item>
+            <el-menu-item index="3">
+              <i class="el-icon-setting"></i>
+              <span slot="title"><el-link th:href="@{/storeIn}">商家入驻</el-link></span>
+            </el-menu-item>
+          </el-menu>
+        </el-aside>
+        <el-main>
+          <el-card class="box-card" style="width: 800px;height: 1000px;">
+            <el-alert
+                    title="收货地址"
+                    type="info"
+                    :closable="false">
+            </el-alert>
+            <span style="color: red">新增收货地址</span>
+            <el-form ref="form" :model="form" label-width="80px" style="margin-left: 50px">
+              <el-form-item label="地址信息:">
+                  <el-cascader
+                          v-model="Addvalue"
+                          :options="options"
+                          @change="handleChange" style="margin-right: 500px;width: 300px"></el-cascader>
+              </el-form-item>
+              <el-form-item label="详细信息:">
+                <el-input
+                        type="textarea"
+                        autosize
+                        placeholder="请输入内容"
+                        v-model="form.textarea" style="margin-right: 500px;width: 300px">
+                </el-input>
+              </el-form-item>
+              <el-form-item label="邮编:">
+                <el-input v-model="form.aPostcode" placeholder="请输入邮编" style="margin-right: 500px;width: 300px"></el-input>
+              </el-form-item>
+              <el-form-item label="收货姓名:">
+                <el-input v-model="form.name" placeholder="请输入收货人姓名" style="margin-right: 500px;width: 300px"></el-input>
+              </el-form-item>
+              <el-form-item label="手机号:">
+                <el-input v-model="form.phone" placeholder="请输入手机号" style="margin-right: 500px;width: 300px"></el-input>
+              </el-form-item >
+                <el-form-item label="默认地址" prop="delivery" style="width: 100px">
+                  <el-switch v-model="form.isDefault" ></el-switch>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="submitForm" style="margin-right: 400px">提交</el-button>
+
+              </el-form-item>
+            </el-form>
+            <el-alert
+
+                    type="success"
+                    :closable="false">
+              <i class="el-icon-warning"></i>
+              已保存{{coutAdd}}了条地址，还能保存{{5-coutAdd}}条地址
+            </el-alert>
+            <template>
+              <el-table
+                      stripe
+                      :data="tableData"
+                      style="width: 100%"
+                      >
+                <el-table-column
+                        prop="aId"
+                        label="id"
+                        width="100" hidden>
+                </el-table-column>
+                <el-table-column
+                        prop="aConsignee"
+                        label="收货人"
+                        width="100">
+                </el-table-column>
+                <el-table-column
+                        prop="aAddress"
+                        label="收货地址"
+                        width="180">
+                </el-table-column>
+                <el-table-column
+                        prop="aPostcode"
+                        label="邮编"
+                        width="100">
+                </el-table-column>
+                <el-table-column
+                        prop="aPhone"
+                        label="手机号"
+                        width="100">
+                </el-table-column>
+                <el-table-column
+                        fixed="right"
+                        label="操作"
+                        width="100">
+                  <template slot-scope="scope">
+                    <el-button @click="handleClick(scope.row)" type="text"  size="small">修改</el-button>
+                    <el-button type="text" size="small" slot="reference" @click="delAddress(scope.row)">删除</el-button>
+                  </template>
+                </el-table-column>
+
+              </el-table>
+            </template>
+
+            <el-dialog
+
+                    :visible.sync="dialogVisible"
+                    width="30%"
+                    :before-close="handleClose">
+              <div id="EditAdd" >
+                <span>修改收货地址</span>
+                <el-form ref="form" :model="form" label-width="80px" style="margin-left: 50px">
+                  <el-form-item label="地址信息:">
+                    <el-cascader
+                            v-model="EditAddVlue"
+                            :options="options"
+                            @change="handleChange" style="margin-right: 500px;width: 300px"></el-cascader>
+                  </el-form-item>
+                  <el-form-item label="详细信息:">
+                    <el-input
+                            type="textarea"
+                            autosize
+                            placeholder="请输入内容"
+                            v-model="formEdit.textarea" style="margin-right: 500px;width: 300px">
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label="邮编:">
+                    <el-input v-model="formEdit.aPostcode" placeholder="请输入邮编" style="margin-right: 500px;width: 300px"></el-input>
+                  </el-form-item>
+                  <el-form-item label="收货姓名:">
+                    <el-input v-model="formEdit.aConsignee" placeholder="请输入收货人姓名" style="margin-right: 500px;width: 300px"></el-input>
+                  </el-form-item>
+                  <el-form-item label="手机号:">
+                    <el-input v-model="formEdit.aPhone" placeholder="请输入手机号" style="margin-right: 500px;width: 300px"></el-input>
+                  </el-form-item >
+                  <el-form-item label="默认地址" prop="delivery" style="width: 100px">
+                    <el-switch v-model="formEdit.isDefault"  ></el-switch>
+                  </el-form-item>
+
+                </el-form>
+              </div>
+              <div id="delAddress" hidden>
+                  确认删除？
+              </div>
+
+                    <span slot="footer" class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                      <el-button type="primary" @click="submitEdit">确 定</el-button>
+                    </span>
+            </el-dialog>
+
+            <el-popconfirm
+                    confirm-button-text='好的'
+                    cancel-button-text='不用了'
+                    icon="el-icon-info"
+                    icon-color="red"
+                    title="这是一段内容确定删除吗？"
+            >
+            </el-popconfirm>
+
+
+          </el-card>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+
+
+<script th:src="@{/js/user/addressInfo.js}">
+
+</script>
+</body>
+</html>

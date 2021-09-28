@@ -111,7 +111,7 @@
             </el-menu>
 
         </el-header>
-        <el-container style="margin-left: 200px">
+        <el-container style="margin-left: 100px">
             <el-aside width="250px">
                 <el-card class="box-card">
                     <el-breadcrumb separator="/" v-for="(row,i) in listTemp" >
@@ -161,7 +161,7 @@
                         <el-row :gutter="8" style = "padding: 0" v-for="storeList in storeTmp" >
 
                             <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" v-for="store in storeList">
-                                <el-card shadow="hover" >
+                                <el-card shadow="hover"  style="height: 300px">
                                     <el-row :gutter="10">
                                         <el-image :src="src">
                                             <div slot="placeholder" class="image-slot">
@@ -188,7 +188,10 @@
                                         <el-link @click="test(store.gId)" target="_blank">{{store.gName}}</el-link>
 
                                     </el-row>
+                                    <el-row :gutter="10" style="position:absolute;bottom:0;margin-bottom: 20px">
+                                        <el-link @click="test(store.gId)" target="_blank">{{store.sName}}</el-link>
 
+                                    </el-row>
 
                                 </el-card>
 

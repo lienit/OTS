@@ -211,7 +211,20 @@
 
 </body>
 <script>
-    var app = new Vue({
+    window.onload = function (){
+        $.ajax({
+            url : '/findBySotreId',
+            type: 'POST',
+            dataType : 'text',
+            success : function (result){
+                app.addForm.gStoreId = result;
+                console.log( app.addForm.gStoreId);
+            }
+        });
+    }
+
+
+     var app = new Vue({
         el: "#app",
         data: {
             username: "admin",
@@ -235,7 +248,7 @@
                 "gNumber": 0,
                 "gParameter": "",
                 "gPrice": "",
-                "gStoreId": 123,
+                "gStoreId": "",
                 "cName": "",
             },
             value: "",
@@ -280,8 +293,10 @@
                 this.getCategoryData();
                 this.value = this.form.cName;
                 this.fileList[0].name = row.gImage;
-                this.fileList[0].url = "http://localhost:8080/image/" + row.gImage;
-                this.uploadUrl = "/uploadFile" + "?gStoreId=" +row.gStoreId +"&&gId="+row.gId
+                this.fileList[0].url = "http://localhost:8181/image/" + row.gImage;
+                this.uploadUrl = "/uploadFile" + "?gStoreId=" +row.gStoreId +"&&gId="+row.gId;
+                console.log(this.uploadUrl);
+
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
@@ -318,7 +333,9 @@
 
             },
             change(val){
-                this.form.cId = val;
+
+                this.form.gCatId = val;
+
             },
             handleDelete(index, row) {
                 this.$confirm('此操作将永久删除物品:' + row.gName + ', 是否继续?', '删除提示', {
@@ -369,7 +386,7 @@
                 var _this = this;
                 var dataPage = _this.currentPage;
                 var dataSize = _this.pageSize;
-                console.log(dataPage);
+
                 $.ajax({
                     type: "POST",
                     url: "/getGoodsData",
@@ -476,12 +493,13 @@
                 }).then(() => {
                     this.loadingStart(1);
                     var _this = this;
-                    console.log(this.form);
+                    var goods =JSON.stringify(_this.form)
+                    console.log(goods);
                     $.ajax({
                         type: "POST",
                         url: "/addGoodsData",
                         data: {
-                            "goods": JSON.stringify(_this.form),
+                            "goods": goods,
                         },
                         success: function (data) {
                             _this.loadingStart(2);
@@ -534,7 +552,7 @@
                 console.log(file, fileList);
             },
             handlePreview(file) {
-                console.log(file);
+                console.log("图片文件"+file);
             },
             iStatus(){
                 var _this = this;

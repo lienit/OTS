@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品详情</title>
+    <script th:src="@{/js/vue.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <style>
+
+
+        .el-aside {
+
+            color: #333;
+            text-align: center;
+            line-height: 200px;
+        }
+
+        .el-main {
+
+            color: #333;
+
+        }
+
+        body > .el-container {
+            margin-bottom: 40px;
+        }
+
+        .el-container:nth-child(5) .el-aside,
+        .el-container:nth-child(6) .el-aside {
+            line-height: 260px;
+        }
+
+        .el-container:nth-child(7) .el-aside {
+            line-height: 320px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header >
+            <el-menu
+                    :default-active="activeIndex2"
+                    class="el-menu-demo"
+                    mode="horizontal"
+                    @select="handleSelect"
+                    background-color="#545c64"
+                    text-color="#fff"
+                    active-text-color="#ffd04b">
+                <el-row :gutter="10" type="flex" justify="end" >
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="2">
+                        <el-menu-item index="4" >
+                            <el-link :underline="false" th:href="@{/home}"  style="color: #FFFFFF">
+                                首页<i class="el-icon-s-goods"></i>
+                            </el-link>
+                        </el-menu-item>
+                    </el-col>
+                    <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                        <div class="grid-content bg-purple"></div>
+                    </el-col>
+                    <el-col :xs="8" :sm="6" :md="6" :lg="6" :xl="6">
+                        <div >
+                            <el-input placeholder="请输入内容"  v-model="input3" class="input-with-select">
+                                <el-select v-model="select" style="width: 130px" slot="prepend" placeholder="请选择">
+                                    <el-option label="商品" value="1"></el-option>
+                                    <el-option label="商家" value="2"></el-option>
+
+                                </el-select>
+                                <el-button slot="append" icon="el-icon-search"></el-button>
+                            </el-input>
+                        </div>
+                    </el-col>
+
+                    <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4">
+                        <div class="grid-content bg-purple"></div>
+                    </el-col>
+                    <div class="userStatus1"  hidden>
+                        <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="2">
+                            <template >
+                                <el-popover
+                                        placement="top-start"
+                                        title="用户信息"
+                                        width="300"
+                                        hight="150"
+                                        trigger="hover"
+                                >
+                                    <div >
+                                        <el-container>
+                                            <el-aside width="150px"><div>
+                                                <el-avatar :size="150"></el-avatar>
+                                            </div></el-aside>
+                                            <el-main>
+
+                                                <el-breadcrumb separator="/">
+                                                    <el-breadcrumb-item ><el-link th:href="@{/userInfo}" target="_blank">账号管理</el-link></el-breadcrumb-item>
+                                                    <el-breadcrumb-item><el-link @click="quit" target="_blank">退出</el-link></el-breadcrumb-item>
+                                                </el-breadcrumb>
+
+                                                <el-row>
+                                                    <el-col :span="24"><div style="line-height: 0px;margin-top: 30px">会员积分：{{integral}}</div></el-col>
+                                                </el-row>
+                                                <el-row>
+                                                    <el-col :span="24"><div style="line-height: 0px;margin-top: 40px">{{vip}}</div></el-col>
+                                                </el-row>
+
+
+                                            </el-main>
+                                        </el-container>
+                                    </div>
+                                    <el-menu-item index="1" slot="reference" v-model="username" style="width: 300px;background: #545c64">{{username}}</el-menu-item>
+                                </el-popover>
+                            </template>
+                        </el-col>
+                    </div>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
+                        <el-menu-item index="1"><el-link :underline="false" th:href="@{/login}"  style="color: #FFFFFF">
+                            你好，请登录
+                        </el-link></el-menu-item>
+                    </el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
+                        <el-menu-item index="3" >
+                            <el-link :underline="false" th:href="@{/signin}"  style="color: #FFFFFF">
+                                免费注册
+                            </el-link>
+                        </el-menu-item>
+                    </el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
+                        <el-submenu index="2">
+                            <template slot="title">我的订单</template>
+                            <el-menu-item index="2-1">订单查询</el-menu-item>
+                            <el-menu-item index="2-2">足迹</el-menu-item>
+
+                        </el-submenu>
+                    </el-col>
+
+                </el-row>
+            </el-menu>
+
+        </el-header>
+        <el-main>
+            <el-card class="box-card"   style="width: 1000px;margin-left: 500px">
+                <el-container>
+                    <el-aside width="500px"><template>
+
+
+                                <el-image :src="src" fit="fit" style="width: 500px;height: 500px">
+                                    <div slot="placeholder" class="image-slot">
+                                        加载中<span class="dot">...</span>
+                                    </div>
+                                </el-image>
+
+                    </template></el-aside>
+                    <el-main style="line-height: 0;height: 500px;word-wrap:break-word; word-break:break-all;">
+
+                        <el-form ref="form" :model="form" label-width="80px">
+                            <el-form-item label="商品名">
+                                {{goodsList.gName}}
+                            </el-form-item>
+                            <el-form-item label="价格" style="color: red">
+                                ￥{{goodsList.gPrice}}
+                            </el-form-item>
+                            <el-form-item label="商品参数" >
+                                {{goodsList.gParameter}}
+                            </el-form-item>
+                            <el-form-item  >
+                                <el-button type="primary" @click="submitForm">提交</el-button>
+                            </el-form-item>
+                        </el-form>
+
+
+
+                    </el-main>
+                </el-container>
+            </el-card>
+        </el-main>
+
+    </el-container>
+</div>
+
+    <script>
+
+        window.onload = function () {
+            $.ajax({
+                url: '/iStatus',
+                type: 'POST',
+                dataType: 'text',
+                success: function (result) {
+                    console.log(result)
+                    if (result != "") {
+                        var parse = JSON.parse(result);
+                        vm.username = parse.userName;
+                        vm.uId = parse.uId;
+                        $('.userStatus1').show();
+                        $('.userStatus2').hide();
+                        if (parse.uLevel != "3") {
+                            vm.vip = "普通会员";
+                        }
+                    }
+                }
+            });
+
+            $.ajax({
+                url: '/getParticular',
+                type: 'POST',
+                dataType: 'text',
+                success: function (result) {
+                    var parse = JSON.parse(result);
+                    vm.goodsList = parse;
+                    console.log(vm.goodsList);
+                }
+            });
+            $.ajax({
+                url: '/getStoreInfo',
+                type: 'POST',
+                dataType: 'text',
+                success: function (result) {
+                    var parse = JSON.parse(result);
+                    vm.storeList = parse;
+                    console.log(vm.storeList);
+                }
+            })
+        }
+        var vm = new Vue({
+            el : '#app',
+            data : {
+                activeIndex: '1',
+                activeIndex2: '1',
+                input3: '',
+                select: '',
+                username : '',
+                uId:'',
+                vip:'',
+                num3 : '',
+                integral:'0',
+                src : "/image/common/store.png",
+                goodsList :{
+                    gId:"",
+                    gStoreId:'',
+                    gCatId : "",
+                    gName : '',
+                    gPrice :'',
+                    gParameter : '',
+                    gNumber : ''
+                },
+                storeList:{
+                    sId : '',
+                    sName : '',
+                    sUserId : '',
+                },
+                form : {
+
+                },
+                dialogVisible: false,
+                tableData:{
+                    date:''
+                }
+            },
+            methods: {
+                handleSelect(key, keyPath) {
+                    console.log(key, keyPath);
+                }
+                , quit() {
+                    $.ajax({
+                        url: '/quit',
+                        type: 'POST',
+                        dataType: 'text',
+                        success: function (result) {
+                            if (result == "success") {
+                                vm.username = "";
+                                window.location.reload();
+                            }
+                        }
+                    })
+                },submitForm(){
+                    if (this.username==""){
+                        vm.$message({
+                            message: '请先登录或注册！',
+                            type: 'warning'
+                        });
+                    }else {
+                        $.ajax({
+                            url: '/setIndent',
+                            type: 'POST',
+                            dataType: 'text',
+                            data: {
+                                "iUserId" : vm.uId,
+                                "iSotreId" :vm.storeList.sId,
+                                "iCatId" : vm.goodsList.gCatId,
+                                "iGoodsId" : vm.goodsList.gId,
+                                "iPrice" : vm.goodsList.gPrice,
+                            },
+                            success: function (result) {
+                                vm.$message({
+                                    message: '购买成功！',
+                                    type: 'warning'
+                                });
+                            }
+                        })
+                    }
+                }
+            }
+
+        })
+    </script>
+</body>
+</html>

@@ -55,6 +55,17 @@ public class BusinessManController {
     }
 
     /**
+     *
+     */
+    @PostMapping("/findBySotreId")
+    @ResponseBody
+    public String findBySotreId(HttpServletRequest request){
+        String gStoreId = UseuIdGetgStoreId(request);
+        System.out.println("过的痕迹复合地基"+gStoreId);
+        return gStoreId;
+    }
+
+    /**
      * 获取商家商品信息
      *
      * @param dataPage 当前页数
@@ -128,8 +139,9 @@ public class BusinessManController {
     public int addGoodsData(String goods, HttpServletRequest request){
         String gStoreId = UseuIdGetgStoreId(request);
         int err = 0;
+        System.out.println("sffdassdfasdfasdfsdfsdf"+goods);
         JSONObject good_Obj = JSONObject.parseObject(goods);
-        Goods _goods = new Goods(good_Obj.getInteger("gCatId"), Integer.parseInt(gStoreId),
+                Goods _goods = new Goods(good_Obj.getInteger("gCatId"), Integer.parseInt(gStoreId),
                 good_Obj.getString("gName"),
                 good_Obj.getDouble("gPrice"), good_Obj.getString("gImage"),
                 good_Obj.getString("gParameter"), good_Obj.getInteger("gNumber"));
@@ -172,7 +184,7 @@ public class BusinessManController {
         // 图片名字
         String fileName =gStoreId + file.getOriginalFilename();
         //文件存放路径
-        String filePath = "src/main/resources/static/image/";
+        String filePath = "E:\\code\\OTS\\src\\main\\resources\\static\\image";
         System.out.println(gId);
         int err = 0;
         try {
@@ -185,7 +197,7 @@ public class BusinessManController {
             e.printStackTrace();
         }
         // 返回图片的存放路径
-
+        System.out.println("图片存放路径"+err);
         return err;
     }
 
@@ -206,6 +218,7 @@ public class BusinessManController {
         request.getSession(false);
         User user = (User) request.getSession().getAttribute("user");
         String gStoreId = goodsMapper.useuIdGetgStoreId(user.getuId()+"");
+        System.out.println("gsdds"+gStoreId);
         return gStoreId;
     }
 

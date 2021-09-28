@@ -1,0 +1,43 @@
+# 数据库配置信息
+tableName: OTS
+username: sea
+password: 1195751600
+port: 3306
+
+spring:
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:mysql://127.0.0.1:${port}/${tableName}?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+    username: sea
+    password: 1195751600
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#  邮箱配置
+  mail:
+    default-encoding: UTF-8
+    host: smtp.qq.com
+    password: sptxerzynbwogigg
+    username: liwuxin54@qq.com
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+
+
+# TomCat端口号
+server:
+  port: 8080
+
+# mybatis配置
+mybatis:
+  type-aliases-package: com.cdtu.ots.entity
+  configuration:
+    call-setters-on-nulls: true     # 解决，查询返回结果含null没有对应字段值问题
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 查看所有执行的SQL语句，在控制台打印
+
+mail:
+  fromMail:
+    addr: liwuxin54@qq.com
+
+

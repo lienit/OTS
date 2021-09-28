@@ -30,7 +30,7 @@ public class CommonController {
     private GoodsService goodsService;
 
 
-
+    //获取商品类别
     @PostMapping("/getCategory")
     @ResponseBody
     public String getCategory(){
@@ -39,6 +39,7 @@ public class CommonController {
         return s;
     }
 
+    //分页获取商品信息
     @PostMapping("/getStore")
     @ResponseBody
     public String getStore(int page, int size){
@@ -57,6 +58,7 @@ public class CommonController {
         String s = JSON.toJSONString(all);
         return s;
     }
+
 
     @PostMapping("/getNumber")
     @ResponseBody
@@ -77,18 +79,19 @@ public class CommonController {
         User user = (User) request.getSession().getAttribute("user");
         if (user!=null){
             User byUserName = userService.findByUserName(user.getUserName());
+            byUserName.setPassword("");
             String s = JSON.toJSONString(byUserName);
             return s;
         }
         return message;
     }
-
+//跳转登录界面
     @RequestMapping("/login")
     public String Login(){
 
         return "login";
     }
-
+//用户登录
     @PostMapping("/isLogin")
     @ResponseBody
     public String isLogin(String name, String password, HttpServletRequest request){
@@ -110,7 +113,7 @@ public class CommonController {
         return message;
 
     }
-
+//退出登录
     @PostMapping("/quit")
     @ResponseBody
     public String quit(HttpServletRequest request){
@@ -118,11 +121,13 @@ public class CommonController {
         return "success";
     }
 
+//跳转注册页面
     @RequestMapping("/signin")
     public String SignIn(){
         return "signIn";
     }
 
+//用户获取邮箱校验码
     @PostMapping("/getCheckCode")
     @ResponseBody
     public String getCheckCode(String mailbox){
@@ -139,6 +144,7 @@ public class CommonController {
         return checkCode;
     }
 
+//用户邮箱校验
     @PostMapping("/userSig")
     @ResponseBody
     public String sigIn(String veCode,long dateTime,String authCode){
@@ -162,6 +168,7 @@ public class CommonController {
 
         return message;
     }
+//    用户注册
     @PostMapping("/userSigin")
     @ResponseBody
     public String userSigin(String emila, String username, String password, String phone ){

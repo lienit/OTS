@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>网上交易系统</title>
+    <script th:src="@{/js/vue.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/common/home.css}">
+</head>
+<body>
+<div id="test03">
+    <el-container>
+        <el-header >
+            <el-menu
+                    :default-active="activeIndex2"
+                    class="el-menu-demo"
+                    mode="horizontal"
+                    @select="handleSelect"
+                    background-color="#545c64"
+                    text-color="#fff"
+                    active-text-color="#ffd04b">
+                <el-row :gutter="10" type="flex" justify="end" >
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="2">
+                        <el-menu-item index="4" >
+                            <el-link :underline="false" th:href="@{/home}"  style="color: #FFFFFF">
+                                首页<i class="el-icon-s-goods"></i>
+                            </el-link>
+                            </el-menu-item>
+                    </el-col>
+                    <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                        <div class="grid-content bg-purple"></div>
+                    </el-col>
+                    <el-col :xs="8" :sm="6" :md="6" :lg="6" :xl="6">
+                        <div >
+                            <el-input placeholder="请输入内容"  v-model="input3" class="input-with-select">
+                                <el-select v-model="select" style="width: 130px" slot="prepend" placeholder="请选择">
+                                    <el-option label="商品" value="1"></el-option>
+                                    <el-option label="商家" value="2"></el-option>
+
+                                </el-select>
+                                <el-button slot="append" icon="el-icon-search"></el-button>
+                            </el-input>
+                        </div>
+                    </el-col>
+
+                    <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4">
+                        <div class="grid-content bg-purple"></div>
+                    </el-col>
+                        <div class="userStatus1"  hidden>
+                            <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="2">
+                                <template >
+                                    <el-popover
+                                            placement="top-start"
+                                            title="用户信息"
+                                            width="300"
+                                            hight="150"
+                                            trigger="hover"
+                                            >
+                                            <div >
+                                                <el-container>
+                                                    <el-aside width="150px"><div>
+                                                        <el-avatar :size="150"></el-avatar>
+                                                    </div></el-aside>
+                                                    <el-main>
+
+                                                            <el-breadcrumb separator="/">
+                                                                <el-breadcrumb-item ><el-link th:href="@{/userInfo}" target="_blank">账号管理</el-link></el-breadcrumb-item>
+                                                                <el-breadcrumb-item><el-link @click="quit" target="_blank">退出</el-link></el-breadcrumb-item>
+                                                            </el-breadcrumb>
+
+                                                        <el-row>
+                                                            <el-col :span="24"><div style="line-height: 0px;margin-top: 30px">会员积分：{{integral}}</div></el-col>
+                                                        </el-row>
+                                                        <el-row>
+                                                            <el-col :span="24"><div style="line-height: 0px;margin-top: 40px">{{vip}}</div></el-col>
+                                                        </el-row>
+
+
+                                                    </el-main>
+                                                </el-container>
+                                            </div>
+                                        <el-menu-item index="1" slot="reference" v-model="username" style="width: 300px;background: #545c64">{{username}}</el-menu-item>
+                                    </el-popover>
+                                </template>
+                            </el-col>
+                    </div>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
+                            <el-menu-item index="1"><el-link :underline="false" th:href="@{/login}"  style="color: #FFFFFF">
+                                你好，请登录
+                            </el-link></el-menu-item>
+                        </el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
+                            <el-menu-item index="3" >
+                                <el-link :underline="false" th:href="@{/signin}"  style="color: #FFFFFF">
+                                    免费注册
+                                </el-link>
+                            </el-menu-item>
+                        </el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
+                        <el-submenu index="2">
+                            <template slot="title">我的订单</template>
+                            <el-menu-item index="2-1">订单查询</el-menu-item>
+                            <el-menu-item index="2-2">足迹</el-menu-item>
+
+                        </el-submenu>
+                    </el-col>
+
+                </el-row>
+            </el-menu>
+
+        </el-header>
+        <el-container style="margin-left: 200px">
+            <el-aside width="250px">
+                <el-card class="box-card">
+                    <el-breadcrumb separator="/" v-for="(row,i) in listTemp" >
+                        <el-breadcrumb-item v-for="(cell,j) in row">
+                            <el-link :underline="false"  target="_blank" style="margin: 5px;margin-top: 20px">
+                                {{cell.cName}}
+                            </el-link>
+                        </el-breadcrumb-item>
+                    </el-breadcrumb>
+
+                </el-card>
+
+            </el-aside>
+            <el-container>
+                <el-main >
+<!--                    轮播-->
+                    <el-row :gutter="10"   >
+                        <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+                            <template>
+                                <el-carousel :interval="4000" type="card" height="400px">
+                                    <el-carousel-item v-for="item in imgList" :key="item">
+                                        <el-image :src="item.src" fit="fit">
+                                            <div slot="placeholder" class="image-slot">
+                                                加载中<span class="dot">...</span>
+                                            </div>
+                                        </el-image>
+                                    </el-carousel-item>
+                                </el-carousel>
+                            </template>
+                        </el-col>
+                    </el-row>
+
+                    <el-row :gutter="10"   >
+                        <div >
+<!--                            <el-image :src="src">-->
+<!--                                <div slot="placeholder" class="image-slot">-->
+<!--                                    加载中<span class="dot">...</span>-->
+<!--                                </div>-->
+<!--                            </el-image>-->
+                           <div style="text-align: center">
+                                <i class="el-icon-present"></i>为你推荐<i class="el-icon-present"></i>
+                            </div>
+
+                        </div>
+                    </el-row>
+                    <div >
+                        <el-row :gutter="8" style = "padding: 0" v-for="storeList in storeTmp" >
+
+                            <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" v-for="store in storeList">
+                                <el-card shadow="hover" >
+                                    <el-row :gutter="10">
+                                        <el-image :src="src">
+                                            <div slot="placeholder" class="image-slot">
+                                                加载中<span class="dot">...</span>
+                                            </div>
+                                        </el-image>
+                                    </el-row>
+                                    <el-row :gutter="10">
+
+
+                                        <el-col :span="12">
+                                            <div style="float:left">
+                                            ￥{{store.gPrice}}
+                                        </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                            <div style="text-align: center">
+                                            {{store.gNumber}}人付款
+                                        </div>
+                                        </el-col>
+
+                                    </el-row>
+                                    <el-row :gutter="10">
+                                        <el-link @click="test(store.gId)" target="_blank">{{store.gName}}</el-link>
+
+                                    </el-row>
+
+
+                                </el-card>
+
+                            </el-col>
+
+                        </el-row>
+                    </div>
+                    <template>
+                    <div class="block" style="margin-top: 20px">
+
+                        <el-pagination
+                                @size-change="handleSizeChange"
+                                @current-change="handleCurrentChange"
+                                :current-page="currentPage4"
+                                :page-sizes="[4, 8, 12, 16]"
+                                :page-size="100"
+                                layout="total, sizes, prev, pager, next, jumper"
+                                :total="sNumber">
+                        </el-pagination>
+                    </div>
+                    </template>
+
+
+
+
+                </el-main>
+                <el-footer>Footer</el-footer>
+            </el-container>
+        </el-container>
+    </el-container>
+
+
+</div>
+
+
+
+
+<script th:src="@{/js/common/home.js}">
+
+
+</script>
+
+
+</body>
+</html>
