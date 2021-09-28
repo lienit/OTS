@@ -98,11 +98,14 @@ public class StroeController {
     @PostMapping("/commitIndet")
     @ResponseBody
     public String commitIndent(Indent indentList){
+        String message = "success";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         indentList.setiDate(simpleDateFormat.format(new Date()));
         boolean b = indentService.insertIndent(indentList);
-        System.out.println(b);
-        return "";
+        if (b){
+            message = "error";
+        }
+        return message;
     }
 
 }

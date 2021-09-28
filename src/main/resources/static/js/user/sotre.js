@@ -186,6 +186,18 @@ var vm = new Vue({
                     "iState" : vm.indentList.iState
                 },
                 success : function (req){
+                    vm.$message({
+                        message: '购买成功！！',
+                        type: 'success'
+                    });
+                    var time = setInterval(function () {
+                        vm.dialogVisible = false;
+                        window.location.reload();
+                        window.clearInterval(time);
+
+                    }, 500);
+
+
 
                 }
             })
