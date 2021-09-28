@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface UserMapper {
@@ -22,6 +24,23 @@ public interface UserMapper {
     @Select("select * from user")
     public List<User> findAll();
 
+    /**
+     * 查询待审核用户
+     * @param page , size
+     * @param page
+     * @param size
+     * @return
+     */
+    @Select("select * from user where uLevel=2 limit #{page},#{size}")
+    public ArrayList<Map<String, Object>> findByAuditUser(int page, int size);
+
+    /**
+     * 统计待审核用户数量
+     * @return
+     */
+    @Select("select count(uId) from user where uLevel=2")
+    public String auditUserSize();
+
     @Insert("insert into user(userName,password,uPhone,uEmail) values(#{userName},#{password},#{uPhone},#{uEmail})")
     public Boolean insertUser(User user);
 
@@ -33,5 +52,7 @@ public interface UserMapper {
 
     @Update("update user set uLevel=#{uLevel} where userName = #{username}")
     public Boolean updateLevel(String username,String uLevel);
+
+
 
 }

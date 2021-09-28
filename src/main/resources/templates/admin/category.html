@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>类别管理</title>
   <script th:src="@{/js/vue.min.js}"></script>
   <link rel="stylesheet" th:href="@{/css/index.css}">
   <script th:src="@{/js/index.js}"></script>
@@ -40,129 +40,182 @@
       text-align: center;
       height: 100%;
     }
+    #app {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
 
+    .el-header, .el-footer {
+      background-color: #545c64;
+      color: white;
+    }
+
+    .el-main {
+      background-color: #E9EEF3;
+      color: #333;
+      text-align: center;
+    }
+
+    .el-aside {
+      background-color: #545c64;
+      color: #333;
+      text-align: center;
+      height: 86vh;
+    }
+    .el-loading-parent--relative {
+      position: unset!important;
+    }
   </style>
 </head>
 <body>
 
 <div id="app">
   <el-container style="height: 100%;">
-    <el-aside width="200px" style="background-color:#545c64">
-      <el-menu default-active="1"
-               class="el-menu-vertical-demo"
-               @select="handleSelect"
-               background-color="#545c64"
-               text-color="#fff"
-               active-text-color="#ffd04b">
-        <el-submenu index="1">
-          <template slot="title"><i class="el-icon-message"></i>导航一</template>
-          <el-menu-item-group>
-            <el-menu-item index="1">
-              <i class="el-icon-menu"></i>
-              <span slot="title">用户管理</span>
-            </el-menu-item>
-            <el-menu-item index="2">
-              <i class="el-icon-document"></i>
-              <span slot="title">类别管理</span>
-            </el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
+    <el-header>
+      <el-menu
+              text-color="#fff"
+              active-text-color="white"
+              background-color="#545c64"
+              default-active="1"
+              mode="horizontal"
+              @select="handleSelect">
+        <el-row>
+          <el-col :span="21">
+            <span index="1" style="font-size: x-large; line-height: 60px;">管理员中心</span>
+          </el-col>
+
+        </el-row>
       </el-menu>
-    </el-aside>
+    </el-header>
+    <el-container>
+      <el-aside width="200px" style="background-color:#545c64">
+        <el-menu default-active="1"
+                 class="el-menu-vertical-demo"
+                 @select="handleSelect"
+                 background-color="#545c64"
+                 text-color="#fff"
+                 active-text-color="#ffd04b">
+          <el-submenu index="1">
+            <template slot="title"><i class="el-icon-message"></i>导航一</template>
+            <el-menu-item-group>
+              <el-menu-item index="1">
+                <i class="el-icon-menu"></i>
+                <span slot="title">用户管理</span>
+              </el-menu-item>
+              <el-menu-item index="2">
+                <i class="el-icon-document"></i>
+                <span slot="title">类别管理</span>
+              </el-menu-item>
+              <el-menu-item index="3">
+                <i class="el-icon-document"></i>
+                <span slot="title">商家审核</span>
+              </el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
+      <el-container>
+        <el-main>
+          <template>
+            <el-button type="primary" @click="categoryadd" plain>添加类别</el-button>
+            <el-table
+                    :data="categoryData"
+                    border
+                    style="width: 100%">
+              <el-table-column
+                      fixed
+                      prop="cId"
+                      label="编号"
+                      width="100">
+              </el-table-column>
+              <el-table-column
+                      prop="cName"
+                      label="名称"
+                      width="100">
+              </el-table-column>
+              <el-table-column
+                      prop="cState"
+                      label="状态"
+                      width="100">
+              </el-table-column>
+              <el-table-column
+                      prop="belong"
+                      label="归属"
+                      width="180">
+              </el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <el-button
+                          size="mini"
+                          icon="el-icon-edit" circle
+                          @click="categoryEdit(scope.$index, scope.row)"></el-button>
+                  <el-button
+                          size="mini"
+                          type="danger"
+                          icon="el-icon-delete" circle
+                          @click="categoryDelete(scope.$index, scope.row)"></el-button>
 
-    <el-main>
-      <template>
-        <el-button type="primary" @click="categoryadd" plain>添加类别</el-button>
-        <el-table
-                :data="categoryData"
-                border
-                style="width: 100%">
-          <el-table-column
-                  fixed
-                  prop="cId"
-                  label="编号"
-                  width="100">
-          </el-table-column>
-          <el-table-column
-                  prop="cName"
-                  label="名称"
-                  width="100">
-          </el-table-column>
-          <el-table-column
-                  prop="cState"
-                  label="状态"
-                  width="100">
-          </el-table-column>
-          <el-table-column
-                  prop="belong"
-                  label="归属"
-                  width="180">
-          </el-table-column>
-          <el-table-column label="操作">
-            <template slot-scope="scope">
-              <el-button
-                      size="mini"
-                      icon="el-icon-edit" circle
-                      @click="categoryEdit(scope.$index, scope.row)"></el-button>
-              <el-button
-                      size="mini"
-                      type="danger"
-                      icon="el-icon-delete" circle
-                      @click="categoryDelete(scope.$index, scope.row)"></el-button>
-
-            </template>
-          </el-table-column>
-        </el-table>
+                </template>
+              </el-table-column>
+            </el-table>
 
 
-        <el-dialog title="添加类别信息" :visible.sync="dialogFormVisible">
-          <!-- 在el-dialog中进行嵌套el-form实现弹出表格的效果 -->
-          <el-form :model="form">
-            <el-form-item label="编号" :label-width="formLabelWidth">
-              <el-input v-model="form.cId" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="姓名" :label-width="formLabelWidth">
-              <el-input v-model="form.cName" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="状态" :label-width="formLabelWidth">
-              <el-input v-model="form.cState" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="归属" :label-width="formLabelWidth">
-              <el-input v-model="form.belong" auto-complete="off"></el-input>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="cancel">取 消</el-button>
-            <!-- 设置触发更新的方法 -->
-            <el-button type="primary" @click="addCategory">确 定</el-button>
-          </div>
-        </el-dialog>
+            <el-dialog title="添加类别信息" :visible.sync="dialogFormVisible">
+              <!-- 在el-dialog中进行嵌套el-form实现弹出表格的效果 -->
+              <el-form :model="form">
+                <el-form-item label="编号" :label-width="formLabelWidth">
+                  <el-input v-model="form.cId" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="姓名" :label-width="formLabelWidth">
+                  <el-input v-model="form.cName" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="状态" :label-width="formLabelWidth">
+                  <el-input v-model="form.cState" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="归属" :label-width="formLabelWidth">
+                  <el-input v-model="form.belong" auto-complete="off"></el-input>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="cancel">取 消</el-button>
+                <!-- 设置触发更新的方法 -->
+                <el-button type="primary" @click="addCategory">确 定</el-button>
+              </div>
+            </el-dialog>
 
 
-        <el-dialog title="修改类别信息" :visible.sync="alTerDialogFormVisible">
-          <el-form :model="form">
-            <el-form-item label="编号" :label-width="formLabelWidth">
-              <el-input v-model="form.cId" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="姓名" :label-width="formLabelWidth">
-              <el-input v-model="form.cName" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="状态" :label-width="formLabelWidth">
-              <el-input v-model="form.cState" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="归属" :label-width="formLabelWidth">
-              <el-input v-model="form.belong" auto-complete="off"></el-input>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="changeCancel">取 消</el-button>
-            <!-- 设置触发更新的方法 -->
-            <el-button type="primary" @click="changeCategory">确 定</el-button>
-          </div>
-        </el-dialog>
-      </template>
+            <el-dialog title="修改类别信息" :visible.sync="alTerDialogFormVisible">
+              <el-form :model="form">
+                <el-form-item label="编号" :label-width="formLabelWidth">
+                  <el-input v-model="form.cId" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="姓名" :label-width="formLabelWidth">
+                  <el-input v-model="form.cName" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="状态" :label-width="formLabelWidth">
+                  <el-input v-model="form.cState" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="归属" :label-width="formLabelWidth">
+                  <el-input v-model="form.belong" auto-complete="off"></el-input>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="changeCancel">取 消</el-button>
+                <!-- 设置触发更新的方法 -->
+                <el-button type="primary" @click="changeCategory">确 定</el-button>
+              </div>
+            </el-dialog>
+          </template>
 
-    </el-main>
+        </el-main>
+      </el-container>
+    </el-container>
+
+
+
   </el-container>
   <el-footer style="line-height: 60px; font-size: 12px; color: white; text-align: center; ">
     <div class="block" style="margin-top: auto;">
@@ -411,6 +464,9 @@
           window.location.replace("/a");
         }if (key == 2) {
           window.location.replace("/category");
+        }
+        if (key ==3){
+          window.location.replace("/storeAudit");
         }
       },
       getCategoryDataSize() {

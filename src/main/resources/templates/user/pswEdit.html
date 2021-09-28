@@ -35,7 +35,11 @@
             <el-col :span="3">
               <el-submenu index="2">
                 <template slot="title">欢迎：{{form.username}}</template>
-                <el-menu-item index="2-1">我的订单</el-menu-item>
+                <el-menu-item index="2-1">
+                  <el-link th:href="@{/myIndent}" target="_blank">
+                    我的订单
+                  </el-link>
+                </el-menu-item>
                 <el-menu-item index="2-2" ><el-link th:href="@{/pswEdit}" :underline="false"  style="color: #FFFFFF" target="_blank">修改密码</el-link></el-menu-item>
                 <el-menu-item index="2-3">足迹</el-menu-item>
                 <el-menu-item index="2-4" @click="quit">退出登录</el-menu-item>

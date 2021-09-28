@@ -1,10 +1,7 @@
 package com.cdtu.ots.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.cdtu.ots.entity.Address;
-import com.cdtu.ots.entity.Goods;
-import com.cdtu.ots.entity.Indent;
-import com.cdtu.ots.entity.Store;
+import com.cdtu.ots.entity.*;
 import com.cdtu.ots.service.AddressService;
 import com.cdtu.ots.service.GoodsService;
 import com.cdtu.ots.service.IndentService;
@@ -17,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import redis.clients.jedis.Jedis;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 @Controller
 public class StroeController {
@@ -106,6 +106,64 @@ public class StroeController {
             message = "error";
         }
         return message;
+    }
+
+    /**
+     * 访问用户订单界面
+     */
+    @RequestMapping("/myIndent")
+    public String myIndent(){
+        return "/user/myIndent";
+    }
+
+    /**
+     * 获取订单数据
+     */
+    @PostMapping("/findByIndentStoreGoods")
+    @ResponseBody
+    public  String findByIndentStoreGoods(HttpServletRequest request,int page, int size){
+        User user = (User) request.getSession().getAttribute("user");
+
+        int num=0;
+
+        if (page > 1) {
+
+            for (int i = 1;i < page; i++){
+                num+=size;
+            }
+        }
+
+        ArrayList<Map<String, Object>> byStoreGoods = indentService.findByStoreGoods(user.getuId(),num,size);
+
+        String s = JSON.toJSONString(byStoreGoods);
+
+        return s;
+    }
+
+    /**
+     * 修改用户订单状态
+     * @param iId
+     * @return
+     */
+    @PostMapping("/editIndentiState")
+    @ResponseBody
+    public String editIndentiState(String iId){
+        String message = "success";
+        boolean b = indentService.updateIndentUser(iId);
+        if (!b){
+             message = "error";
+        }
+        return message;
+    }
+
+    @PostMapping("/getIndentSize")
+    @ResponseBody
+    public String getIndentSize(HttpServletRequest request){
+        User user = (User) request.getSession().getAttribute("user");
+
+
+        String indentCount = indentService.findIndentCount(user.getuId());
+        return indentCount;
     }
 
 }

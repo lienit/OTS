@@ -146,8 +146,6 @@ var vm = new Vue({
             this.getStore();
             console.log(`当前页: ${val}`);
         },getStore(){
-            console.log("sss"+this.currentPage4);
-            console.log("sss"+this.pageSize);
 
             $.ajax({
                 url:'/getStore',

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.cdtu.ots.entity.AdminUser;
 import com.cdtu.ots.entity.AdminCategory;
 import com.cdtu.ots.mapper.AdminUserMapper;
+import com.cdtu.ots.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,9 @@ public class AdminController {
     @Autowired
     AdminUserMapper userMapper;
 
+    @Autowired
+    private UserService userService;
+
 
     @RequestMapping("/admin")
     public String admin(){
@@ -28,6 +32,53 @@ public class AdminController {
     @RequestMapping("/a")
     public String a(){
         return "/admin/a";
+    }
+
+    @RequestMapping("/storeAudit")
+    public String storeAudit(){
+        return "/admin/storeAudit";
+    }
+
+    /**
+     * 获取待审核用户
+     * @return
+     */
+    @PostMapping("/getAuditUser")
+    @ResponseBody
+    public String getAuditUser(int page, int size){
+        int num=0;
+
+        if (page > 1) {
+
+            for (int i = 1;i < page; i++){
+                num+=size;
+            }
+        }
+        ArrayList<Map<String, Object>> byAuditUser = userService.findByAuditUser(num, size);
+        String s = JSON.toJSONString(byAuditUser);
+        return s;
+    }
+
+    /**
+     * 获取待审核用户数量
+     * @return
+     */
+    @PostMapping("/getAuditUserSize")
+    @ResponseBody
+    public String getAuditUserSize(){
+        String s = userService.auditUserSize();
+        return s;
+    }
+
+    @PostMapping("/editUserLevel")
+    @ResponseBody
+    public String editUserLevel(String uLevel,String userName){
+        String message = "success";
+        Boolean aBoolean = userService.updateLevel(userName, uLevel);
+        if (!aBoolean){
+            message = "error";
+        }
+        return message;
     }
 
     @RequestMapping("/category")
@@ -159,9 +210,16 @@ public class AdminController {
     @PostMapping("/getUserPage")
     @ResponseBody
     public String getUserPage(int dataPage, int pageSize) {
-        int page = (dataPage - 1) * pageSize;
+        int num=0;
+
+        if (dataPage > 1) {
+
+            for (int i = 1;i < dataPage; i++){
+                num+=pageSize;
+            }
+        }
         ArrayList<Map<String, Object>> userArrayList;
-        userArrayList = userMapper.findAllSize(page, pageSize);
+        userArrayList = userMapper.findAllSize(num, pageSize);
         System.out.println("dataPage");
         return JSON.toJSONString(userArrayList);
     }

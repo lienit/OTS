@@ -1,10 +1,260 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>我的订单</title>
+    <script th:src="@{/js/vue.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <style>
+
+
+        .el-header, .el-footer {
+
+            color: #333;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .el-aside {
+            background-color: #D3DCE6;
+            color: #333;
+            text-align: center;
+            line-height: 200px;
+        }
+
+        .el-main {
+            background-color: #E9EEF3;
+            color: #333;
+            text-align: center;
+            line-height: 160px;
+        }
+
+        body > .el-container {
+            margin-bottom: 40px;
+        }
+
+        .el-container:nth-child(5) .el-aside,
+        .el-container:nth-child(6) .el-aside {
+            line-height: 260px;
+        }
+
+        .el-container:nth-child(7) .el-aside {
+            line-height: 320px;
+        }
+
+        .demo-table-expand {
+            font-size: 0;
+        }
+        .demo-table-expand label {
+            width: 90px;
+            color: #99a9bf;
+        }
+        .demo-table-expand .el-form-item {
+            margin-right: 0;
+            margin-bottom: 0;
+            width: 50%;
+        }
+
+    </style>
 </head>
 <body>
+<div id="app">
+    <el-container>
+        <el-header >
+            <el-menu
+                    :default-active="activeIndex2"
+                    class="el-menu-demo"
+                    mode="horizontal"
+                    @select="handleSelect"
+                    background-color="#545c64"
+                    text-color="#fff"
+                    active-text-color="#ffd04b">
+                <el-row :gutter="10" type="flex" justify="end" >
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="2">
+                        <el-menu-item index="4" >
+                            <el-link :underline="false" th:href="@{/home}"  style="color: #FFFFFF">
+                                首页<i class="el-icon-s-goods"></i>
+                            </el-link>
+                        </el-menu-item>
+                    </el-col>
+                    <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                        <div class="grid-content bg-purple"></div>
+                    </el-col>
+                    <el-col :xs="8" :sm="6" :md="6" :lg="6" :xl="6">
+                        <div >
+                            <el-input placeholder="请输入内容"  v-model="input3" class="input-with-select">
+                                <el-select v-model="select" style="width: 130px" slot="prepend" placeholder="请选择">
+                                    <el-option label="商品" value="1"></el-option>
+                                    <el-option label="商家" value="2"></el-option>
 
+                                </el-select>
+                                <el-button slot="append" icon="el-icon-search"></el-button>
+                            </el-input>
+                        </div>
+                    </el-col>
+
+                    <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4">
+                        <div class="grid-content bg-purple"></div>
+                    </el-col>
+                    <div class="userStatus1"  hidden>
+                        <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="2">
+                            <template >
+                                <el-popover
+                                        placement="top-start"
+                                        title="用户信息"
+                                        width="300"
+                                        hight="150"
+                                        trigger="hover"
+                                >
+                                    <div >
+                                        <el-container>
+                                            <el-aside width="150px"><div>
+                                                <el-avatar :size="150"></el-avatar>
+                                            </div></el-aside>
+                                            <el-main>
+
+                                                <el-breadcrumb separator="/">
+                                                    <el-breadcrumb-item ><el-link th:href="@{/userInfo}" target="_blank">账号管理</el-link></el-breadcrumb-item>
+                                                    <el-breadcrumb-item><el-link @click="quit" target="_blank">退出</el-link></el-breadcrumb-item>
+                                                </el-breadcrumb>
+
+                                                <el-row>
+                                                    <el-col :span="24"><div style="line-height: 0px;margin-top: 30px">会员积分：{{integral}}</div></el-col>
+                                                </el-row>
+                                                <el-row>
+                                                    <el-col :span="24"><div style="line-height: 0px;margin-top: 40px">{{vip}}</div></el-col>
+                                                </el-row>
+
+
+                                            </el-main>
+                                        </el-container>
+                                    </div>
+                                    <el-menu-item index="1" slot="reference" v-model="username" style="width: 300px;background: #545c64">{{username}}</el-menu-item>
+                                </el-popover>
+                            </template>
+                        </el-col>
+                    </div>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
+                        <el-menu-item index="1"><el-link :underline="false" th:href="@{/login}"  style="color: #FFFFFF">
+                            你好，请登录
+                        </el-link></el-menu-item>
+                    </el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1" class="userStatus2"  >
+                        <el-menu-item index="3" >
+                            <el-link :underline="false" th:href="@{/signin}"  style="color: #FFFFFF">
+                                免费注册
+                            </el-link>
+                        </el-menu-item>
+                    </el-col>
+                    <el-col :xs="2" :sm="2" :md="2" :lg="2" :xl="1">
+                        <el-submenu index="2">
+                            <template slot="title">我的订单</template>
+                            <el-menu-item index="2-1">
+                                <el-link th:href="@{/myIndent}" :underline="false"  style="color: #FFFFFF" >订单查询</el-link>
+                            </el-menu-item>
+                            <el-menu-item index="2-2">足迹</el-menu-item>
+
+                        </el-submenu>
+                    </el-col>
+
+                </el-row>
+            </el-menu>
+
+        </el-header>
+        <el-main>
+            <el-container>
+                <el-header>
+                    <p align="left"><i class="el-icon-present" style="color: red"></i>我的订单</p>
+                </el-header>
+                <el-divider></el-divider>
+                <el-main>
+                    <el-card class="box-card" style="width: 80%;margin-left: 200px">
+                        <template  >
+                            <el-table
+                                    :data="tableData"
+                                    style="width: 50%;height: 50%;line-height: 0;margin-left: 300px">
+                                <el-table-column type="expand">
+                                    <template slot-scope="props">
+                                        <el-form label-position="left" inline class="demo-table-expand">
+                                            <el-form-item label="时间">
+                                                <span>{{ props.row.iDate }}</span>
+                                            </el-form-item>
+                                            <el-form-item label="订单号">
+                                                <span>{{ props.row.iId }}</span>
+                                            </el-form-item>
+                                            <el-form-item label="店铺名称">
+                                                <span>{{ props.row.sName }}</span>
+                                            </el-form-item>
+
+                                        </el-form>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="商品名称"
+                                        prop="gName">
+                                </el-table-column>
+                                <el-table-column
+                                        label="单价"
+                                        prop="gPrice">
+                                </el-table-column>
+                                <el-table-column
+                                        label="实付款"
+                                        prop="iPrice">
+                                </el-table-column>
+                                <el-table-column
+                                        label="交易状态"
+                                        >
+                                    <template slot-scope="scope">
+                                        <div v-if="scope.row.iState==0">
+                                            <el-tag type="success">已支付</el-tag>
+                                        </div>
+                                        <div v-if="scope.row.iState==1">
+                                            <el-tag >已发货</el-tag>
+                                        </div>
+                                        <div v-if="scope.row.iState==2">
+                                            <el-tag type="info">已收货</el-tag>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="交易操作"
+                                        >
+                                    <template slot-scope="scope">
+                                        <div v-if="scope.row.iState==1">
+                                            <el-button type="primary" @click="commit(scope.row)">确认收货</el-button>
+                                        </div>
+
+
+
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="block">
+
+                                <el-pagination
+                                        @size-change="handleSizeChange"
+                                        @current-change="handleCurrentChange"
+                                        :current-page="currentPage4"
+                                        :page-sizes="[4, 8, 12, 16]"
+                                        :page-size="100"
+                                        layout="total, sizes, prev, pager, next, jumper"
+                                        :total="sNumber">
+                                </el-pagination>
+                            </div>
+                        </template>
+                    </el-card>
+                </el-main>
+            </el-container>
+        </el-main>
+        <el-footer>Footer</el-footer>
+
+    </el-container>
+
+    <script th:src="@{/js/user/myIndent.js}">
+    </script>
+
+</div>
 </body>
 </html>

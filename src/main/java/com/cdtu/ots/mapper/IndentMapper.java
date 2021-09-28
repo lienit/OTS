@@ -20,6 +20,22 @@ public interface IndentMapper {
             "WHERE i.iUserId = u.uId AND i.iCatId = c.cId AND i.iGoodsId = g.gId AND s.sId = #{sId} GROUP BY i.iDate")
     public ArrayList<Map<String, Object>> getEventDayIndent(@Param("sId") String sId);
 
+    /**
+     * 订单查询
+     * @param iUserId
+     * @return
+     */
+    @Select("select * from goods g, store s, indent i where i.iSotreId=s.sId and i.iGoodsId = g.gId and i.iUserId=#{iUserId} limit #{page},#{size}")
+    public ArrayList<Map<String, Object>> findByStoreGoods(int iUserId,int page, int size);
+
+    /**
+     * 查询用户订单数量
+     * @param
+     * @return
+     */
+    @Select("select count(iUserId) from goods g, store s, indent i where i.iSotreId=s.sId and i.iGoodsId = g.gId and i.iUserId=#{iUserId}")
+    public String findIndentCount(int iUserId);
+
     @Select("SELECT  COUNT(i.iId) number, sum(i.iPrice) price , c.cName \n" +
             "from indent i, `user` u, category c, goods g, store s \n" +
             "WHERE i.iUserId = u.uId AND i.iCatId = c.cId AND i.iGoodsId = g.gId AND s.sId = #{sId} GROUP BY c.cId")
@@ -42,6 +58,14 @@ public interface IndentMapper {
     public int updateIndentDataByGid(@Param("iAddress") String iAddress, @Param("iState") String iState,
                                      @Param("iPrice") Double iPrice,
                                      @Param("iSotreId") String iSotreId, @Param("iId") String iId);
+
+    /**
+     * 修改用户订单状态
+     * @param iId
+     * @return
+     */
+    @Update("update indent set iState = 2 where iId=#{iId}")
+    public boolean updateIndentUser(String iId);
 
     @Insert("insert into indent(iUserId,iSotreId,iCatId,iGoodsId,iAddress,iMessage,iPrice,iState,iDate) values(#{iUserId},#{iSotreId},#{iCatId},#{iGoodsId},#{iAddress},#{iMessage},#{iPrice},#{iState},#{iDate})")
     public boolean insertIndent(Indent indent);

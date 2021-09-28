@@ -12,6 +12,11 @@ public class Indent {
     private String iMessage;
     private String iState;
     private String iDate;
+    private String gName;
+    private String gPrice;
+    private String sName;
+
+
 
     public String getiUserId() {
         return iUserId;
@@ -84,6 +89,8 @@ public class Indent {
     public void setiDate(String iDate) {
         this.iDate = iDate;
     }
+
+
 
     @Override
     public String toString() {

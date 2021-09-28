@@ -5,7 +5,9 @@ import com.cdtu.ots.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -20,6 +22,16 @@ public class UserService {
     public User findByLogin(String username, String password){
         User byLogin = userMapper.findByLogin(username, password);
         return byLogin;
+    }
+
+    public ArrayList<Map<String, Object>> findByAuditUser( int page, int size){
+        ArrayList<Map<String, Object>> byAuditUser = userMapper.findByAuditUser(page, size);
+        return byAuditUser;
+    }
+
+    public String auditUserSize(){
+        String s = userMapper.auditUserSize();
+        return s;
     }
 
     public User findByLevel(String uLevel){
